@@ -1,0 +1,45 @@
+# tickets.toml — Epic 6: Milestone F Production Readiness & Handover
+
+[[entry]]
+id = 1
+type = "story"
+title = "Robinhood Chain mainnet deployment manifest generation"
+description = "Creates deployments/4663.json with contract proxies, implementations, start blocks, and parameters."
+verify = "Manifest JSON contains valid checksummed addresses and compiler settings for Chain 4663."
+covers = ["M-F"]
+after = []
+hitl = false
+risk = "medium"
+
+[[entry]]
+id = 2
+type = "story"
+title = "Privilege map and 48-hour timelock ownership transition"
+description = "Authors docs/PRIVILEGE_MAP.md documenting Admin, Guardian, Keeper, Hedger, and Vol Signer roles."
+verify = "Privilege map confirms 48h timelock delays and zero unreviewed deployer bypasses."
+covers = ["M-F"]
+after = [1]
+hitl = false
+risk = "high"
+
+[[entry]]
+id = 3
+type = "story"
+title = "Operational incident runbooks and recovery documentation"
+description = "Authors docs/RUNBOOKS.md covering Oracle failure, halt scenarios, stale sigma, and emergency exit."
+verify = "Runbook outlines explicit step-by-step procedures for all 8 protocol emergency scenarios."
+covers = ["M-F"]
+after = [1]
+hitl = false
+risk = "medium"
+
+[[entry]]
+id = 4
+type = "story"
+title = "Compile official Handover Package and acceptance register"
+description = "Compiles HANDOVER_PACKAGE.md verifying all 12 acceptance demonstrations and repository provenance."
+verify = "HANDOVER_PACKAGE.md published with complete acceptance evidence matrix."
+covers = ["M-F"]
+after = [2, 3]
+hitl = false
+risk = "low"

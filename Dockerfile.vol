@@ -1,0 +1,23 @@
+# Arcum Python Volatility Engine Dockerfile
+FROM python:3.13-slim AS runner
+
+WORKDIR /vol-engine
+
+# Install system build dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    gcc g++ libffi-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install uv package manager
+RUN pip install --no-cache-dir uv
+
+# Copy package files
+COPY vol-engine/pyproject.toml vol-engine/README.md ./
+COPY vol-engine/vol_engine ./vol_engine
+
+# Install dependencies via uv
+RUN uv sync
+
+EXPOSE 8000
+
+CMD ["uv", "run", "python", "-m", "vol_engine.signer"]

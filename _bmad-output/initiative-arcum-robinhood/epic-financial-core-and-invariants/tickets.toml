@@ -1,0 +1,67 @@
+# tickets.toml — Epic 2: Milestone B Financial Core & Invariants
+
+[[entry]]
+id = 1
+type = "story"
+title = "Engine and SeriesRegistry integration"
+description = "Implements SeriesRegistry and links OptionToken factory and pricing engine for Stock Tokens."
+verify = "Series can be registered, listed, and queried with exact strike and speed metadata."
+covers = ["M-B"]
+after = []
+hitl = false
+risk = "medium"
+
+[[entry]]
+id = 2
+type = "story"
+title = "Buy, Sell and Queued Sells execution on local node"
+description = "Implements buy and sell flows with USDG transfers, 3 bps fee, exact approval, and queued sell escrow on halt."
+verify = "Foundry tests prove successful buy, sell, fee deduction, and queued sell under HALTED session."
+covers = ["M-B"]
+after = [1]
+hitl = false
+risk = "high"
+
+[[entry]]
+id = 3
+type = "story"
+title = "Automated Shield protection flow verification"
+description = "Implements Shield put selection matching user Stock Token inventory with bounded execution."
+verify = "Test confirms exact Weekly Down put strike selection and bounded purchase."
+covers = ["M-B"]
+after = [2]
+hitl = false
+risk = "medium"
+
+[[entry]]
+id = 4
+type = "story"
+title = "Writer Pool accounting, lock, and withdrawal queue"
+description = "Integrates WriterPool with conservative liability bounds, 24h deposit lock, 72h withdrawal notice, and 7d claim."
+verify = "Pool state machine tests pass: entry valuation, ticket creation, claim valuation, and partial payouts."
+covers = ["M-B"]
+after = [2]
+hitl = false
+risk = "high"
+
+[[entry]]
+id = 5
+type = "story"
+title = "Cross-language differential vectors (Solidity vs TypeScript vs Python)"
+description = "Executes differential testing across all 3 language implementations for spot, strike, sigma, and speed."
+verify = "Differential test runner confirms zero precision divergence across Solidity, TS, and Python."
+covers = ["M-B"]
+after = [1, 2]
+hitl = false
+risk = "medium"
+
+[[entry]]
+id = 6
+type = "story"
+title = "Foundry Invariants and Stateful Fuzzing suite"
+description = "Implements stateful invariant tests proving pool solvency, monotonically decreasing norm, and cap enforcement."
+verify = "Foundry invariant suite passes 10,000+ runs with 0 violations."
+covers = ["M-B"]
+after = [2, 4]
+hitl = false
+risk = "high"

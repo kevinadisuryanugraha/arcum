@@ -1,0 +1,34 @@
+# tickets.toml — Epic 5: Milestone E Agent Router, MCP Server & Account Abstraction
+
+[[entry]]
+id = 1
+type = "story"
+title = "AgentRouter on-chain policy enforcement test suite"
+description = "Verifies AgentRouter budget bounds, expiry checks, stock whitelisting, and owner-only recipient enforcement."
+verify = "Foundry tests prove agent cannot exceed budget or misdirect sale proceeds."
+covers = ["M-E"]
+after = []
+hitl = false
+risk = "high"
+
+[[entry]]
+id = 2
+type = "story"
+title = "MCP tool server implementation and schema definition"
+description = "Implements Model Context Protocol server in app/src/mcp/ exposing chain, quote, buy, sell, shield, and pool tools."
+verify = "MCP test suite verifies tool schemas, error handling, and parameter bounds."
+covers = ["M-E"]
+after = [1]
+hitl = false
+risk = "medium"
+
+[[entry]]
+id = 3
+type = "story"
+title = "ERC-4337 Account Abstraction and paymaster integration"
+description = "Implements UserOperation builders, paymaster sponsorship rules, and normal wallet fallback."
+verify = "Tests prove sponsorship bounds and gasless execution flow."
+covers = ["M-E"]
+after = [1]
+hitl = false
+risk = "medium"

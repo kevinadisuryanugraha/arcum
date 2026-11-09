@@ -1,0 +1,136 @@
+// SPDX-License-Identifier: MIT
+pragma solidity 0.8.28;
+
+import {Test} from "forge-std/Test.sol";
+import {ArcumEngine} from "../src/ArcumEngine.sol";
+import {SeriesRegistry} from "../src/SeriesRegistry.sol";
+import {PriceGuard} from "../src/PriceGuard.sol";
+import {OptionToken} from "../src/OptionToken.sol";
+import {Series} from "../src/libs/OptionTypes.sol";
+import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+
+contract MockUSDG is ERC20 {
+    constructor() ERC20("USDG", "USDG") {
+        _mint(msg.sender, 10000000 * 1e6); // 10M USDG (6 decimals)
+    }
+
+    function decimals() public pure override returns (uint8) {
+        return 6;
+    }
+
+    function mint(address to, uint256 amount) external {
+        _mint(to, amount);
+    }
+}
+
+contract ArcumEngineTest is Test {
+    ArcumEngine engine;
+    SeriesRegistry registry;
+    PriceGuard priceGuard;
+    MockUSDG usdg;
+
+    address constant NVDA = 0xd0601CE157Db5bdC3162BbaC2a2C8aF5320D9EEC;
+    address buyer = address(0x1111);
+    address pool = address(0x2222);
+
+    bytes32 seriesId;
+
+    function setUp() public {
+        usdg = new MockUSDG();
+        priceGuard = new PriceGuard();
+        registry = new SeriesRegistry();
+
+        engine = new ArcumEngine(address(registry), address(priceGuard), address(usdg), pool);
+
+        registry.setEngine(address(engine));
+        registry.setAllowedStock(NVDA, true);
+
+        // Setup mock price: NVDA at $145 WAD
+        priceGuard.setMockPrice(NVDA, 145 * 1e18);
+
+        // List series: NVDA Up (Call), Strike $145 WAD, Daily (86400s)
+        seriesId = registry.listSeries(NVDA, true, 145 * 1e18, 86400);
+
+        // Warp to Thursday 11:00 AM ET (Regular NYSE Trading Session)
+        vm.warp(4 * 86400 + 54000);
+
+        // Fund buyer and pool
+        usdg.mint(buyer, 10000 * 1e6); // 10k USDG
+        usdg.mint(pool, 100000 * 1e6); // 100k USDG in pool
+    }
+
+    function testBuyUpOption() public {
+        uint128 units = 10 * 1e18; // 10 whole stock units
+        uint64 deadline = uint64(block.timestamp + 3600);
+
+        vm.startPrank(buyer);
+        usdg.approve(address(engine), type(uint256).max);
+
+        (uint256 costUsdg, uint256 tokensMinted) = engine.buy(seriesId, units, 1000 * 1e6, deadline, buyer);
+        vm.stopPrank();
+
+        assertTrue(costUsdg > 0, "Cost must be > 0 USDG");
+        assertEq(tokensMinted, units, "Tokens minted must equal units");
+
+        // Verify pool received USDG
+        assertEq(usdg.balanceOf(pool), 100000 * 1e6 + costUsdg);
+
+        // Verify buyer received OptionToken
+        Series memory s = registry.seriesOf(seriesId);
+        assertEq(OptionToken(s.token).balanceOf(buyer), units);
+    }
+
+    function testSellOption() public {
+        // First buy
+        uint128 units = 10 * 1e18;
+        uint64 deadline = uint64(block.timestamp + 3600);
+
+        vm.startPrank(buyer);
+        usdg.approve(address(engine), type(uint256).max);
+        engine.buy(seriesId, units, 1000 * 1e6, deadline, buyer);
+
+        // Approve pool to spend USDG for sell payouts
+        vm.stopPrank();
+        vm.prank(pool);
+        usdg.approve(address(engine), type(uint256).max);
+
+        // Now sell
+        vm.startPrank(buyer);
+        Series memory s = registry.seriesOf(seriesId);
+        OptionToken(s.token).approve(address(engine), type(uint256).max);
+
+        uint256 proceeds = engine.sell(seriesId, units, 1, deadline, buyer);
+        vm.stopPrank();
+
+        assertTrue(proceeds > 0, "Proceeds must be > 0");
+        assertEq(OptionToken(s.token).balanceOf(buyer), 0, "OptionTokens must be burned");
+    }
+
+    function testQueuedSellOnMarketHalt() public {
+        // Buy first
+        uint128 units = 10 * 1e18;
+        uint64 deadline = uint64(block.timestamp + 3600);
+
+        vm.startPrank(buyer);
+        usdg.approve(address(engine), type(uint256).max);
+        engine.buy(seriesId, units, 1000 * 1e6, deadline, buyer);
+
+        // Set market halt
+        vm.stopPrank();
+        priceGuard.setMarketHalt(NVDA, true);
+
+        // Try to sell during halt -> must queue
+        vm.startPrank(buyer);
+        Series memory s = registry.seriesOf(seriesId);
+        OptionToken(s.token).approve(address(engine), type(uint256).max);
+
+        uint256 proceeds = engine.sell(seriesId, units, 0, deadline, buyer);
+        vm.stopPrank();
+
+        assertEq(proceeds, 0, "Immediate proceeds must be 0 on queued sell");
+        (bytes32 queuedSeries, address seller, , uint128 queuedTokens, ) = engine.queuedSells(1);
+        assertEq(queuedSeries, seriesId);
+        assertEq(seller, buyer);
+        assertEq(queuedTokens, units);
+    }
+}

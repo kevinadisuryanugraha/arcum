@@ -1,0 +1,67 @@
+# tickets.toml — Epic 4: Milestone D Frontend Visual & Functional Parity
+
+[[entry]]
+id = 1
+type = "story"
+title = "Live stock ticker and market session state bar"
+description = "Connects top ticker bar to NVDA, TSLA, SPY, QQQ, AAPL and displays dynamic NYSE session pills."
+verify = "Browser renders live prices, 24h change, IV, and active session badge matching network."
+covers = ["M-D"]
+after = []
+hitl = false
+risk = "low"
+
+[[entry]]
+id = 2
+type = "story"
+title = "Interactive options trading chain with closed-form pricing quote"
+description = "Renders strike matrix, Up/Down cards, Daily/Weekly speed, and real-time quote modal with 3 bps fee."
+verify = "UI computes exact closed-form quotes, Greeks, and executes buy flow with USDG approval stepper."
+covers = ["M-D"]
+after = [1]
+hitl = false
+risk = "medium"
+
+[[entry]]
+id = 3
+type = "story"
+title = "Decaying positions tracker with raw vs effective units display"
+description = "Renders active options positions clearly displaying raw tokens, norm decay percentage, and effective units."
+verify = "Positions table displays accurate effective units and provides sell execution action."
+covers = ["M-D"]
+after = [2]
+hitl = false
+risk = "medium"
+
+[[entry]]
+id = 4
+type = "story"
+title = "1-Click automated Shield protection portfolio flow"
+description = "Builds Shield interface inspecting tokenized stock holdings and purchasing eligible Weekly Put options."
+verify = "Shield tab calculates protection cost and executes put hedging with 1 click."
+covers = ["M-D"]
+after = [2]
+hitl = false
+risk = "medium"
+
+[[entry]]
+id = 5
+type = "story"
+title = "Writer Pool deposit, 24h lock timer, and 72h withdrawal queue"
+description = "Renders Writer Pool NAV, entry valuation, deposit modal with 24h lock, and 72h withdrawal queue."
+verify = "Pool tab displays NAV metrics, handles deposit and ticket claim interactions."
+covers = ["M-D"]
+after = [2]
+hitl = false
+risk = "medium"
+
+[[entry]]
+id = 6
+type = "story"
+title = "Independent emergency exit guide with 1-click offline HTML download"
+description = "Builds /exit page with direct on-chain Cast commands and downloadable self-contained HTML guide."
+verify = "User can download offline HTML exit guide and view command-line recovery steps."
+covers = ["M-D"]
+after = []
+hitl = false
+risk = "low"

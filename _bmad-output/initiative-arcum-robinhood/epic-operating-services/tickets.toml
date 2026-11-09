@@ -1,0 +1,56 @@
+# tickets.toml — Epic 3: Milestone C Operating Services
+
+[[entry]]
+id = 1
+type = "story"
+title = "Bun event indexer with persistent cursors"
+description = "Implements blockchain event indexer in Bun/TS ingesting Bought, Sold, Accrued, and Queued events."
+verify = "Indexer ingests events deterministically, supports reorg rollback and stores cursors."
+covers = ["M-C"]
+after = []
+hitl = false
+risk = "medium"
+
+[[entry]]
+id = 2
+type = "story"
+title = "Keeper automation daemon for norm accrual and queue fills"
+description = "Builds keeper service calling accrue(), relisting epochs, and executing mature queued sells."
+verify = "Keeper detects elapsed tau time, triggers storeAccrual on registry, and fills queued tickets."
+covers = ["M-C"]
+after = [1]
+hitl = false
+risk = "high"
+
+[[entry]]
+id = 3
+type = "story"
+title = "Pool delta hedger with bounded Uniswap swaps"
+description = "Implements pool spot delta hedging logic with cash buffer and slippage protection."
+verify = "Hedger computes net Greeks and outputs bounded rebalance execution intents."
+covers = ["M-C"]
+after = [1]
+hitl = false
+risk = "high"
+
+[[entry]]
+id = 4
+type = "story"
+title = "EIP-712 volatility engine signer and poster"
+description = "Implements Python EIP-712 signer creating valid VolReading signatures for VolOracle."
+verify = "Signer creates valid typed signatures matching contract domain separator and nonces."
+covers = ["M-C"]
+after = []
+hitl = false
+risk = "medium"
+
+[[entry]]
+id = 5
+type = "story"
+title = "Service key isolation and health monitoring API"
+description = "Separates Keeper, Hedger, and Vol Signer private keys and exposes /v1/health telemetry."
+verify = "Health endpoint reports sync state, key balances, and zero shared key custody."
+covers = ["M-C"]
+after = [2, 3, 4]
+hitl = false
+risk = "medium"

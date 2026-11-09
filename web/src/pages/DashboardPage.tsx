@@ -1,0 +1,1023 @@
+import React, { useState } from 'react';
+import {
+  TrendingUp,
+  TrendingDown,
+  Shield,
+  Layers,
+  Bot,
+  Activity,
+  Settings,
+  ArrowUpRight,
+  ArrowDownRight,
+  CheckCircle2,
+  Clock,
+  AlertCircle,
+  HelpCircle,
+  ExternalLink,
+  ChevronRight,
+  RefreshCw,
+  Wallet,
+  Lock,
+} from 'lucide-react';
+import { StockInfo, Speed, OptionSide, UserPosition, WriterPoolStats, AgentPolicy } from '../types';
+import { quoteOption, calculateScenarioPnL } from '../utils/pricing';
+import { INITIAL_POOL_STATS, INITIAL_AGENT_POLICY, CHAIN_CONFIG, CONTRACT_ADDRESSES } from '../data/protocol';
+
+interface DashboardPageProps {
+  stocks: StockInfo[];
+  selectedStock: StockInfo;
+  onSelectStock: (stock: StockInfo) => void;
+  walletConnected: boolean;
+  onConnectWallet: () => void;
+}
+
+export const DashboardPage: React.FC<DashboardPageProps> = ({
+  stocks,
+  selectedStock,
+  onSelectStock,
+  walletConnected,
+  onConnectWallet,
+}) => {
+  const [activeTab, setActiveTab] = useState<string>('trade');
+  const [selectedSide, setSelectedSide] = useState<OptionSide>('UP');
+  const [selectedSpeed, setSelectedSpeed] = useState<Speed>('DAILY');
+  const [selectedStrike, setSelectedStrike] = useState<number>(selectedStock.price);
+  const [tradeUnits, setTradeUnits] = useState<number>(10);
+  const [showBuyModal, setShowBuyModal] = useState<boolean>(false);
+  const [buyStep, setBuyStep] = useState<'idle' | 'approving' | 'approved' | 'buying' | 'success'>('idle');
+
+  // What-If Scenario State
+  const [scenarioDays, setScenarioDays] = useState<number>(3);
+  const [targetMovePct, setTargetMovePct] = useState<number>(5); // default +5% move
+
+  // Writer Pool state
+  const [poolStats, setPoolStats] = useState<WriterPoolStats>(INITIAL_POOL_STATS);
+  const [depositAmount, setDepositAmount] = useState<number>(1000);
+  const [withdrawShares, setWithdrawShares] = useState<number>(500);
+
+  // User Positions Mock State
+  const [positions, setPositions] = useState<UserPosition[]>([
+    {
+      id: 'pos-1',
+      seriesId: '0xNVDA_UP_145_D',
+      stock: 'NVDA',
+      isCall: true,
+      speed: 'DAILY',
+      strike: 145.0,
+      rawTokens: 50.0,
+      norm: 0.942,
+      effectiveUnits: 47.1,
+      entryPriceUsdg: 4.85,
+      currentValueUsdg: 282.6,
+      pnlUsdg: 39.1,
+      pnlPct: 16.05,
+      boughtAt: Date.now() - 86400000 * 2,
+    },
+    {
+      id: 'pos-2',
+      seriesId: '0xTSLA_DOWN_240_W',
+      stock: 'TSLA',
+      isCall: false,
+      speed: 'WEEKLY',
+      strike: 240.0,
+      rawTokens: 25.0,
+      norm: 0.985,
+      effectiveUnits: 24.62,
+      entryPriceUsdg: 8.20,
+      currentValueUsdg: 189.5,
+      pnlUsdg: -15.5,
+      pnlPct: -7.56,
+      boughtAt: Date.now() - 86400000 * 3,
+    }
+  ]);
+
+  // Agent Policy
+  const [agentPolicy, setAgentPolicy] = useState<AgentPolicy>(INITIAL_AGENT_POLICY);
+
+  // Quote computation
+  const activeIvBps = selectedSpeed === 'DAILY' ? selectedStock.ivDailyBps : selectedStock.ivWeeklyBps;
+  const currentQuote = quoteOption(
+    selectedStock.price,
+    selectedStrike,
+    activeIvBps,
+    selectedSpeed,
+    selectedSide === 'UP',
+    tradeUnits
+  );
+
+  // What-If Scenario Calculation
+  const projectedSpot = selectedStock.price * (1 + targetMovePct / 100);
+  const scenario = calculateScenarioPnL(
+    projectedSpot,
+    selectedStrike,
+    activeIvBps,
+    selectedSpeed,
+    selectedSide === 'UP',
+    tradeUnits,
+    scenarioDays,
+    currentQuote.totalCostUsdg
+  );
+
+  // Strikes list around current price
+  const strikeInterval = selectedStock.price > 300 ? 10 : selectedStock.price > 100 ? 5 : 2.5;
+  const baseStrike = Math.round(selectedStock.price / strikeInterval) * strikeInterval;
+  const strikes = [
+    baseStrike - strikeInterval * 2,
+    baseStrike - strikeInterval,
+    baseStrike,
+    baseStrike + strikeInterval,
+    baseStrike + strikeInterval * 2,
+  ];
+
+  const handleExecuteBuy = () => {
+    setBuyStep('approving');
+    setTimeout(() => {
+      setBuyStep('approved');
+      setTimeout(() => {
+        setBuyStep('buying');
+        setTimeout(() => {
+          setBuyStep('success');
+          // Add to positions
+          const newPos: UserPosition = {
+            id: `pos-${Date.now()}`,
+            seriesId: `0x${selectedStock.symbol}_${selectedSide}_${selectedStrike}_${selectedSpeed[0]}`,
+            stock: selectedStock.symbol,
+            isCall: selectedSide === 'UP',
+            speed: selectedSpeed,
+            strike: selectedStrike,
+            rawTokens: tradeUnits,
+            norm: 1.0,
+            effectiveUnits: tradeUnits,
+            entryPriceUsdg: currentQuote.markPriceUsdg,
+            currentValueUsdg: currentQuote.totalCostUsdg,
+            pnlUsdg: 0,
+            pnlPct: 0,
+            boughtAt: Date.now(),
+          };
+          setPositions([newPos, ...positions]);
+        }, 1200);
+      }, 800);
+    }, 1000);
+  };
+
+  return (
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+      {/* Top Navigation Tabs */}
+      <div className="flex flex-wrap items-center justify-between gap-4 border-b border-arcum-border pb-4">
+        <div className="flex items-center gap-1 overflow-x-auto scrollbar-none">
+          {[
+            { id: 'trade', label: 'Trade Options', icon: TrendingUp },
+            { id: 'positions', label: `Positions (${positions.length})`, icon: Layers },
+            { id: 'shield', label: 'Shield Protection', icon: Shield },
+            { id: 'pool', label: 'Writer Pool', icon: Lock },
+            { id: 'agents', label: 'Agent Policy', icon: Bot },
+            { id: 'activity', label: 'Activity', icon: Activity },
+            { id: 'settings', label: 'Settings', icon: Settings },
+          ].map((tab) => {
+            const Icon = tab.icon;
+            const isActive = activeTab === tab.id;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                  isActive
+                    ? 'bg-arcum-gold/15 text-arcum-gold border border-arcum-gold/40 shadow-sm'
+                    : 'text-arcum-muted hover:text-white hover:bg-arcum-surface'
+                }`}
+              >
+                <Icon className="w-4 h-4" />
+                <span>{tab.label}</span>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Selected Stock Indicator */}
+        <div className="flex items-center gap-3 bg-arcum-surface border border-arcum-border px-3 py-1.5 rounded-lg text-xs font-mono">
+          <span className="text-arcum-muted">Selected Underlying:</span>
+          <span className="font-bold text-white font-sans">{selectedStock.symbol}</span>
+          <span className="text-arcum-gold font-tabular">${selectedStock.price.toFixed(2)}</span>
+        </div>
+      </div>
+
+      {/* TAB 1: TRADE OPTIONS */}
+      {activeTab === 'trade' && (
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Left Column: Chain & Strike Selector */}
+          <div className="lg:col-span-2 space-y-6">
+            {/* Speed & Side Bar */}
+            <div className="bg-arcum-surface border border-arcum-border rounded-xl p-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+              {/* Up / Down Selector */}
+              <div className="flex items-center gap-2 w-full sm:w-auto">
+                <button
+                  onClick={() => setSelectedSide('UP')}
+                  className={`flex-1 sm:flex-none px-6 py-2 rounded-lg font-semibold text-sm flex items-center justify-center gap-2 transition-all ${
+                    selectedSide === 'UP'
+                      ? 'bg-arcum-up text-arcum-dark up-glow font-bold'
+                      : 'bg-arcum-card text-arcum-muted hover:text-white border border-arcum-border'
+                  }`}
+                >
+                  <ArrowUpRight className="w-4 h-4" /> Up (Call)
+                </button>
+                <button
+                  onClick={() => setSelectedSide('DOWN')}
+                  className={`flex-1 sm:flex-none px-6 py-2 rounded-lg font-semibold text-sm flex items-center justify-center gap-2 transition-all ${
+                    selectedSide === 'DOWN'
+                      ? 'bg-arcum-down text-white down-glow font-bold'
+                      : 'bg-arcum-card text-arcum-muted hover:text-white border border-arcum-border'
+                  }`}
+                >
+                  <ArrowDownRight className="w-4 h-4" /> Down (Put)
+                </button>
+              </div>
+
+              {/* Speed Selector */}
+              <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
+                <span className="text-xs text-arcum-muted font-mono">Funding Speed:</span>
+                <button
+                  onClick={() => setSelectedSpeed('DAILY')}
+                  className={`px-3 py-1.5 rounded-md text-xs font-mono font-medium transition-all ${
+                    selectedSpeed === 'DAILY'
+                      ? 'bg-arcum-gold text-arcum-dark font-bold'
+                      : 'bg-arcum-card text-arcum-muted hover:text-white border border-arcum-border'
+                  }`}
+                >
+                  Daily (τ=1d)
+                </button>
+                <button
+                  onClick={() => setSelectedSpeed('WEEKLY')}
+                  className={`px-3 py-1.5 rounded-md text-xs font-mono font-medium transition-all ${
+                    selectedSpeed === 'WEEKLY'
+                      ? 'bg-arcum-gold text-arcum-dark font-bold'
+                      : 'bg-arcum-card text-arcum-muted hover:text-white border border-arcum-border'
+                  }`}
+                >
+                  Weekly (τ=7d)
+                </button>
+              </div>
+            </div>
+
+            {/* Strikes Matrix */}
+            <div className="bg-arcum-surface border border-arcum-border rounded-xl overflow-hidden">
+              <div className="px-5 py-4 border-b border-arcum-border flex items-center justify-between">
+                <div>
+                  <h3 className="font-bold text-white text-base">Select Strike Price</h3>
+                  <p className="text-xs text-arcum-muted">Everlasting options hold no expiry date. Holding cost continuously updates effective payout.</p>
+                </div>
+                <div className="text-xs font-mono text-arcum-gold">
+                  IV {(activeIvBps / 100).toFixed(0)}%
+                </div>
+              </div>
+
+              <div className="divide-y divide-arcum-border font-mono text-xs">
+                {strikes.map((strikeVal) => {
+                  const isAtm = Math.abs(strikeVal - selectedStock.price) < strikeInterval;
+                  const isSelected = selectedStrike === strikeVal;
+                  const q = quoteOption(
+                    selectedStock.price,
+                    strikeVal,
+                    activeIvBps,
+                    selectedSpeed,
+                    selectedSide === 'UP',
+                    1
+                  );
+
+                  return (
+                    <div
+                      key={strikeVal}
+                      onClick={() => setSelectedStrike(strikeVal)}
+                      className={`px-5 py-3.5 flex items-center justify-between cursor-pointer transition-colors ${
+                        isSelected
+                          ? 'bg-arcum-card border-l-4 border-l-arcum-gold'
+                          : 'hover:bg-arcum-card/50'
+                      }`}
+                    >
+                      <div className="flex items-center gap-3">
+                        <span className="font-bold text-sm text-white font-sans">${strikeVal.toFixed(2)}</span>
+                        {isAtm && (
+                          <span className="text-[10px] px-2 py-0.5 rounded bg-arcum-gold/15 text-arcum-gold border border-arcum-gold/30">
+                            ATM
+                          </span>
+                        )}
+                        <span className="text-arcum-muted">
+                          Delta: <span className="text-white">{q.delta.toFixed(3)}</span>
+                        </span>
+                      </div>
+
+                      <div className="flex items-center gap-6 text-right">
+                        <div>
+                          <div className="text-[10px] text-arcum-muted">Mark Price</div>
+                          <div className="font-bold text-white font-tabular">${q.markPriceUsdg.toFixed(3)} USDG</div>
+                        </div>
+                        <div>
+                          <div className="text-[10px] text-arcum-muted">Est. Daily Decay</div>
+                          <div className="text-amber-400 font-tabular">-${q.dailyDecayUsdg.toFixed(3)}</div>
+                        </div>
+                        <button
+                          className={`px-3 py-1 rounded text-xs font-medium transition-colors ${
+                            isSelected
+                              ? 'bg-arcum-gold text-arcum-dark font-bold'
+                              : 'bg-arcum-surface border border-arcum-border text-arcum-muted hover:text-white'
+                          }`}
+                        >
+                          Select
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Norm Decay Infobox */}
+            <div className="bg-arcum-card/40 border border-arcum-border rounded-xl p-4 flex items-start gap-3 text-xs text-arcum-muted">
+              <HelpCircle className="w-4 h-4 text-arcum-gold flex-shrink-0 mt-0.5" />
+              <div>
+                <span className="font-semibold text-white">How holding cost works in Arcum:</span> Option buyers pay continuous holding cost directly in-kind through the series normalization factor (Norm_t). While your ERC-20 token count stays constant at {tradeUnits} tokens, your effective exercisable units decrease continuously until sold.
+              </div>
+            </div>
+          </div>
+
+          {/* Right Column: Execution Order Card */}
+          <div className="space-y-6">
+            <div className="bg-arcum-surface border border-arcum-border rounded-xl p-6 space-y-6 gold-glow">
+              <div className="flex items-center justify-between border-b border-arcum-border pb-4">
+                <div>
+                  <h3 className="font-bold text-lg text-white">Order Summary</h3>
+                  <div className="text-xs text-arcum-goldMuted font-mono">
+                    {selectedStock.symbol} ${selectedStrike.toFixed(2)} {selectedSide === 'UP' ? 'Up (Call)' : 'Down (Put)'}
+                  </div>
+                </div>
+                <span className="px-2.5 py-1 rounded text-xs font-mono bg-arcum-card border border-arcum-border text-white">
+                  {selectedSpeed}
+                </span>
+              </div>
+
+              {/* Units Input */}
+              <div className="space-y-2">
+                <div className="flex justify-between text-xs text-arcum-muted">
+                  <span>Number of Units</span>
+                  <span>1 Unit = 1 Whole Stock Token</span>
+                </div>
+                <div className="flex items-center bg-arcum-card border border-arcum-border rounded-lg px-3 py-2">
+                  <input
+                    type="number"
+                    min="1"
+                    step="1"
+                    value={tradeUnits}
+                    onChange={(e) => setTradeUnits(Math.max(1, parseFloat(e.target.value) || 1))}
+                    className="bg-transparent text-white font-mono text-base focus:outline-none w-full"
+                  />
+                  <span className="text-xs font-mono text-arcum-muted">UNITS</span>
+                </div>
+              </div>
+
+              {/* Mathematical Breakdown */}
+              <div className="bg-arcum-card/60 border border-arcum-border rounded-lg p-3.5 space-y-2.5 text-xs font-mono">
+                <div className="flex justify-between">
+                  <span className="text-arcum-muted">Underlying Spot (S):</span>
+                  <span className="text-white font-tabular">${currentQuote.spot.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-arcum-muted">Strike Price (K):</span>
+                  <span className="text-white font-tabular">${currentQuote.strike.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-arcum-muted">Mark Price (Per Unit):</span>
+                  <span className="text-white font-tabular">${currentQuote.markPriceUsdg.toFixed(3)} USDG</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-arcum-muted">Protocol Fee (3 bps):</span>
+                  <span className="text-white font-tabular">${currentQuote.feeUsdg.toFixed(3)} USDG</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-arcum-muted">Est. Daily Holding Cost:</span>
+                  <span className="text-amber-400 font-tabular">-${currentQuote.dailyDecayUsdg.toFixed(3)} / day</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-arcum-muted">Delta (Δ):</span>
+                  <span className="text-arcum-gold font-tabular">{currentQuote.delta.toFixed(3)}</span>
+                </div>
+                <div className="flex justify-between pt-2 border-t border-arcum-border text-sm font-bold">
+                  <span className="text-white">Total USDG Cost:</span>
+                  <span className="text-arcum-gold font-tabular">${currentQuote.totalCostUsdg.toFixed(2)} USDG</span>
+                </div>
+              </div>
+
+              {/* Action Button */}
+              {walletConnected ? (
+                <button
+                  onClick={() => {
+                    setBuyStep('idle');
+                    setShowBuyModal(true);
+                  }}
+                  className={`w-full py-3.5 rounded-xl font-bold text-sm shadow-md transition-all flex items-center justify-center gap-2 ${
+                    selectedSide === 'UP'
+                      ? 'bg-arcum-up text-arcum-dark hover:opacity-95'
+                      : 'bg-arcum-down text-white hover:opacity-95'
+                  }`}
+                >
+                  Buy {selectedSide === 'UP' ? 'Up (Call)' : 'Down (Put)'} Option
+                </button>
+              ) : (
+                <button
+                  onClick={onConnectWallet}
+                  className="w-full py-3.5 rounded-xl bg-gradient-to-r from-arcum-gold to-arcum-goldMuted text-arcum-dark font-bold text-sm shadow-md hover:opacity-95 transition-all flex items-center justify-center gap-2"
+                >
+                  <Wallet className="w-4 h-4" /> Connect Wallet to Trade
+                </button>
+              )}
+            </div>
+
+            {/* Interactive What-If PnL Simulator Card */}
+            <div className="bg-arcum-surface border border-arcum-border rounded-xl p-5 space-y-4">
+              <div className="flex items-center justify-between border-b border-arcum-border pb-3">
+                <div className="flex items-center gap-2 text-white font-bold text-sm">
+                  <span className="w-2 h-2 rounded-full bg-arcum-gold" />
+                  What-If PnL Simulator
+                </div>
+                <span className="text-[10px] text-arcum-muted font-mono">Simulates Norm Decay</span>
+              </div>
+
+              {/* Slider 1: Price Move */}
+              <div className="space-y-1.5 font-mono text-xs">
+                <div className="flex justify-between">
+                  <span className="text-arcum-muted">Target Underlying Move:</span>
+                  <span className={`font-bold ${targetMovePct >= 0 ? 'text-arcum-up' : 'text-arcum-down'}`}>
+                    {targetMovePct >= 0 ? '+' : ''}{targetMovePct}% (${projectedSpot.toFixed(2)})
+                  </span>
+                </div>
+                <input
+                  type="range"
+                  min="-25"
+                  max="35"
+                  value={targetMovePct}
+                  onChange={(e) => setTargetMovePct(parseInt(e.target.value))}
+                  className="w-full accent-arcum-gold h-1.5 bg-arcum-card rounded-lg appearance-none cursor-pointer"
+                />
+              </div>
+
+              {/* Slider 2: Holding Horizon */}
+              <div className="space-y-1.5 font-mono text-xs">
+                <div className="flex justify-between">
+                  <span className="text-arcum-muted">Holding Horizon:</span>
+                  <span className="text-white font-bold">{scenarioDays} Days</span>
+                </div>
+                <input
+                  type="range"
+                  min="0"
+                  max="14"
+                  value={scenarioDays}
+                  onChange={(e) => setScenarioDays(parseInt(e.target.value))}
+                  className="w-full accent-arcum-gold h-1.5 bg-arcum-card rounded-lg appearance-none cursor-pointer"
+                />
+              </div>
+
+              {/* Projected PnL Results Box */}
+              <div className={`p-4 rounded-xl border font-mono text-xs space-y-2 ${
+                scenario.netPnlUsdg >= 0
+                  ? 'bg-arcum-up/10 border-arcum-up/30 text-arcum-up'
+                  : 'bg-arcum-down/10 border-arcum-down/30 text-arcum-down'
+              }`}>
+                <div className="flex justify-between items-center">
+                  <span className="text-white font-medium">Projected Net PnL:</span>
+                  <span className="text-base font-bold font-tabular">
+                    {scenario.netPnlUsdg >= 0 ? '+' : ''}${scenario.netPnlUsdg.toFixed(2)} USDG
+                  </span>
+                </div>
+                <div className="flex justify-between items-center text-[11px]">
+                  <span className="text-arcum-muted">Projected Net ROI:</span>
+                  <span className="font-bold font-tabular">
+                    {scenario.roiPct >= 0 ? '+' : ''}{scenario.roiPct.toFixed(1)}%
+                  </span>
+                </div>
+                <div className="flex justify-between items-center text-[10px] text-arcum-muted pt-1 border-t border-arcum-border/50">
+                  <span>Norm Decay Loss:</span>
+                  <span>-{scenario.decayPct}% effective units</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* TAB 2: ACTIVE POSITIONS */}
+      {activeTab === 'positions' && (
+        <div className="space-y-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-xl font-bold text-white">Your Everlasting Positions</h2>
+              <p className="text-xs text-arcum-muted">Positions continuously accrue holding cost via Norm reduction. Sell at executable bid anytime.</p>
+            </div>
+            <button
+              onClick={() => setActiveTab('trade')}
+              className="px-4 py-2 rounded-lg bg-arcum-gold text-arcum-dark font-semibold text-xs flex items-center gap-1"
+            >
+              Open New Position <ArrowUpRight className="w-4 h-4" />
+            </button>
+          </div>
+
+          <div className="bg-arcum-surface border border-arcum-border rounded-xl overflow-hidden">
+            <table className="w-full text-left text-xs font-mono">
+              <thead className="bg-arcum-card border-b border-arcum-border text-arcum-muted uppercase tracking-wider">
+                <tr>
+                  <th className="px-5 py-3">Asset & Side</th>
+                  <th className="px-5 py-3">Strike</th>
+                  <th className="px-5 py-3">Raw Tokens</th>
+                  <th className="px-5 py-3">Current Norm</th>
+                  <th className="px-5 py-3">Effective Units</th>
+                  <th className="px-5 py-3">Current Value</th>
+                  <th className="px-5 py-3">Unrealized PnL</th>
+                  <th className="px-5 py-3 text-right">Action</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-arcum-border">
+                {positions.map((pos) => {
+                  const isProfit = pos.pnlUsdg >= 0;
+                  return (
+                    <tr key={pos.id} className="hover:bg-arcum-card/40 transition-colors">
+                      <td className="px-5 py-4">
+                        <div className="font-bold text-sm text-white font-sans flex items-center gap-1.5">
+                          {pos.stock}
+                          <span
+                            className={`text-[10px] px-1.5 py-0.5 rounded font-mono font-bold ${
+                              pos.isCall ? 'bg-arcum-up/10 text-arcum-up' : 'bg-arcum-down/10 text-arcum-down'
+                            }`}
+                          >
+                            {pos.isCall ? 'UP' : 'DOWN'}
+                          </span>
+                        </div>
+                        <div className="text-[10px] text-arcum-muted">{pos.speed}</div>
+                      </td>
+                      <td className="px-5 py-4 text-white font-tabular font-medium">${pos.strike.toFixed(2)}</td>
+                      <td className="px-5 py-4 text-white font-tabular">{pos.rawTokens.toFixed(2)}</td>
+                      <td className="px-5 py-4 font-tabular text-arcum-gold">
+                        {(pos.norm * 100).toFixed(1)}%
+                        <div className="text-[10px] text-arcum-muted">Decay active</div>
+                      </td>
+                      <td className="px-5 py-4 text-white font-tabular font-bold">{pos.effectiveUnits.toFixed(2)}</td>
+                      <td className="px-5 py-4 text-white font-tabular font-bold">${pos.currentValueUsdg.toFixed(2)} USDG</td>
+                      <td className={`px-5 py-4 font-tabular font-bold ${isProfit ? 'text-arcum-up' : 'text-arcum-down'}`}>
+                        {isProfit ? '+' : ''}${pos.pnlUsdg.toFixed(2)} ({isProfit ? '+' : ''}{pos.pnlPct.toFixed(2)}%)
+                      </td>
+                      <td className="px-5 py-4 text-right">
+                        <button
+                          onClick={() => alert(`Sell order queued for ${pos.stock} at executable bid.`)}
+                          className="px-3 py-1.5 rounded-lg bg-arcum-card hover:bg-arcum-down/20 hover:text-arcum-down text-white border border-arcum-border transition-colors text-xs font-sans font-medium"
+                        >
+                          Close / Sell
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {/* TAB 3: SHIELD PROTECTION */}
+      {activeTab === 'shield' && (
+        <div className="max-w-4xl mx-auto space-y-8">
+          <div className="text-center space-y-2">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-arcum-gold/10 text-arcum-gold border border-arcum-gold/30 text-xs font-mono">
+              <Shield className="w-3.5 h-3.5" /> Automated Stock Token Downside Floor
+            </div>
+            <h2 className="text-2xl sm:text-3xl font-bold text-white">Shield Portfolio Protection</h2>
+            <p className="text-sm text-arcum-muted max-w-xl mx-auto">
+              Hold synthetic Stock Tokens in your wallet? Shield purchases the optimal eligible Weekly Put (Down) series to hedge against adverse market moves.
+            </p>
+          </div>
+
+          <div className="bg-arcum-surface border border-arcum-border rounded-2xl p-8 space-y-6 gold-glow">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Asset Selector */}
+              <div className="space-y-2">
+                <label className="text-xs font-mono text-arcum-muted uppercase">Stock Token to Protect</label>
+                <select
+                  value={selectedStock.symbol}
+                  onChange={(e) => {
+                    const st = stocks.find((s) => s.symbol === e.target.value);
+                    if (st) onSelectStock(st);
+                  }}
+                  className="w-full bg-arcum-card border border-arcum-border rounded-xl px-4 py-3 text-white text-sm font-mono focus:outline-none focus:border-arcum-gold"
+                >
+                  {stocks.map((s) => (
+                    <option key={s.symbol} value={s.symbol}>
+                      {s.symbol} — {s.name} (${s.price.toFixed(2)})
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Detected Wallet Balance */}
+              <div className="space-y-2">
+                <label className="text-xs font-mono text-arcum-muted uppercase">Detected Wallet Holding</label>
+                <div className="bg-arcum-card border border-arcum-border rounded-xl px-4 py-3 text-white text-sm font-mono flex items-center justify-between">
+                  <span>50.0 {selectedStock.symbol} Tokens</span>
+                  <span className="text-arcum-gold">Valued: ${(selectedStock.price * 50).toFixed(2)} USDG</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Protection Percentage Slider */}
+            <div className="space-y-3 pt-4 border-t border-arcum-border">
+              <div className="flex justify-between text-xs font-mono">
+                <span className="text-arcum-muted">Protection Strike Level</span>
+                <span className="text-arcum-gold font-bold">5% OTM Put ($ {(selectedStock.price * 0.95).toFixed(2)})</span>
+              </div>
+              <input
+                type="range"
+                min="1"
+                max="20"
+                defaultValue="5"
+                className="w-full accent-arcum-gold h-2 bg-arcum-card rounded-lg appearance-none cursor-pointer"
+              />
+              <div className="flex justify-between text-[11px] text-arcum-muted font-mono">
+                <span>Tight Protection (-2%)</span>
+                <span>Balanced (-5%)</span>
+                <span>Catastrophe Shield (-15%)</span>
+              </div>
+            </div>
+
+            {/* Quote Card */}
+            <div className="bg-arcum-card border border-arcum-border rounded-xl p-5 space-y-3 font-mono text-xs">
+              <div className="flex justify-between">
+                <span className="text-arcum-muted">Selected Put Strike:</span>
+                <span className="text-white font-bold">${(selectedStock.price * 0.95).toFixed(2)} USDG</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-arcum-muted">Speed Model:</span>
+                <span className="text-white">WEEKLY (tau = 7 days) — Slowest Decay</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-arcum-muted">Est. Weekly Protection Premium:</span>
+                <span className="text-arcum-gold font-bold font-tabular">$142.50 USDG</span>
+              </div>
+            </div>
+
+            {/* Execute Shield */}
+            <button
+              onClick={() => alert(`Shield protection order executed on Robinhood Chain for ${selectedStock.symbol}.`)}
+              className="w-full py-4 rounded-xl bg-gradient-to-r from-arcum-gold to-arcum-goldMuted text-arcum-dark font-bold text-sm flex items-center justify-center gap-2 hover:opacity-95 shadow-md shadow-arcum-gold/15"
+            >
+              <Shield className="w-5 h-5" /> Execute 1-Click Shield Protection
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* TAB 4: WRITER POOL */}
+      {activeTab === 'pool' && (
+        <div className="space-y-8">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+            <div>
+              <div className="text-xs font-mono text-arcum-gold uppercase tracking-wider">Liquidity Underwriting</div>
+              <h2 className="text-2xl sm:text-3xl font-bold text-white">USDG Writer Pool</h2>
+              <p className="text-xs text-arcum-muted">
+                Underwrite everlasting options, earn 80% protocol fee share + continuous holding funding. Capital entry and exit are governed by conservative liability bounds.
+              </p>
+            </div>
+            <div className="bg-arcum-surface border border-arcum-border px-4 py-2 rounded-xl text-right font-mono text-xs">
+              <div className="text-arcum-muted">Estimated Current APR</div>
+              <div className="text-xl font-bold text-arcum-up font-tabular">{poolStats.aprPct}%</div>
+            </div>
+          </div>
+
+          {/* Key Pool Metrics */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="bg-arcum-surface border border-arcum-border rounded-xl p-5 font-mono">
+              <div className="text-xs text-arcum-muted uppercase">Pool NAV</div>
+              <div className="text-2xl font-bold text-white font-tabular mt-1">
+                ${(poolStats.navUsdg / 1e6).toFixed(2)}M
+              </div>
+              <div className="text-[11px] text-arcum-muted mt-1">Cash + Hedges - Liability</div>
+            </div>
+            <div className="bg-arcum-surface border border-arcum-border rounded-xl p-5 font-mono">
+              <div className="text-xs text-arcum-muted uppercase">NAV Per Share</div>
+              <div className="text-2xl font-bold text-arcum-gold font-tabular mt-1">
+                ${poolStats.navPerShare.toFixed(4)}
+              </div>
+              <div className="text-[11px] text-arcum-up mt-1">+10 bps entry premium</div>
+            </div>
+            <div className="bg-arcum-surface border border-arcum-border rounded-xl p-5 font-mono">
+              <div className="text-xs text-arcum-muted uppercase">Capacity Utilization</div>
+              <div className="text-2xl font-bold text-white font-tabular mt-1">
+                {poolStats.capacityUtilizationPct}%
+              </div>
+              <div className="text-[11px] text-arcum-muted mt-1">Max 35% NAV total cap</div>
+            </div>
+            <div className="bg-arcum-surface border border-arcum-border rounded-xl p-5 font-mono">
+              <div className="text-xs text-arcum-muted uppercase">Withdrawal Rules</div>
+              <div className="text-2xl font-bold text-white font-tabular mt-1">
+                72h Queue
+              </div>
+              <div className="text-[11px] text-arcum-muted mt-1">24h lock, 7d claim window</div>
+            </div>
+          </div>
+
+          {/* Deposit & Withdrawal Actions */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {/* Deposit Box */}
+            <div className="bg-arcum-surface border border-arcum-border rounded-2xl p-6 space-y-5">
+              <h3 className="font-bold text-lg text-white">Deposit USDG Capital</h3>
+              <p className="text-xs text-arcum-muted">
+                Receive pool shares minted at the conservative lower-bound valuation. Deposit remains locked for 24 hours before a withdrawal notice can be submitted.
+              </p>
+
+              <div className="space-y-2">
+                <label className="text-xs font-mono text-arcum-muted">Deposit Amount (USDG)</label>
+                <div className="flex items-center bg-arcum-card border border-arcum-border rounded-lg px-4 py-2.5">
+                  <input
+                    type="number"
+                    value={depositAmount}
+                    onChange={(e) => setDepositAmount(parseFloat(e.target.value) || 0)}
+                    className="bg-transparent text-white font-mono text-base focus:outline-none w-full"
+                  />
+                  <span className="text-xs font-mono text-arcum-muted">USDG</span>
+                </div>
+              </div>
+
+              <div className="bg-arcum-card border border-arcum-border rounded-lg p-3 space-y-1.5 text-xs font-mono">
+                <div className="flex justify-between">
+                  <span className="text-arcum-muted">Est. Pool Shares:</span>
+                  <span className="text-white font-tabular font-bold">
+                    {(depositAmount / poolStats.navPerShare).toFixed(2)} SHARES
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-arcum-muted">Deposit Lock Period:</span>
+                  <span className="text-amber-400 font-tabular">24 Hours</span>
+                </div>
+              </div>
+
+              <button
+                onClick={() => alert(`Deposited ${depositAmount} USDG to Writer Pool.`)}
+                className="w-full py-3.5 rounded-xl bg-arcum-gold text-arcum-dark font-bold text-sm hover:opacity-95 transition-all shadow-md"
+              >
+                Approve & Deposit USDG
+              </button>
+            </div>
+
+            {/* Withdrawal Queue Box */}
+            <div className="bg-arcum-surface border border-arcum-border rounded-2xl p-6 space-y-5">
+              <h3 className="font-bold text-lg text-white">Request Withdrawal</h3>
+              <p className="text-xs text-arcum-muted">
+                Withdrawals follow an asynchronous 72-hour notice ticket queue. Payouts are calculated at the claim-time valuation to ensure zero front-running.
+              </p>
+
+              <div className="space-y-2">
+                <label className="text-xs font-mono text-arcum-muted">Shares to Burn</label>
+                <div className="flex items-center bg-arcum-card border border-arcum-border rounded-lg px-4 py-2.5">
+                  <input
+                    type="number"
+                    value={withdrawShares}
+                    onChange={(e) => setWithdrawShares(parseFloat(e.target.value) || 0)}
+                    className="bg-transparent text-white font-mono text-base focus:outline-none w-full"
+                  />
+                  <span className="text-xs font-mono text-arcum-muted">SHARES</span>
+                </div>
+              </div>
+
+              <div className="bg-arcum-card border border-arcum-border rounded-lg p-3 space-y-1.5 text-xs font-mono">
+                <div className="flex justify-between">
+                  <span className="text-arcum-muted">Notice Delay:</span>
+                  <span className="text-white">72 Hours</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-arcum-muted">Claim Window:</span>
+                  <span className="text-white">7 Calendar Days</span>
+                </div>
+              </div>
+
+              <button
+                onClick={() => alert(`Withdrawal notice created. Ticket matured in 72 hours.`)}
+                className="w-full py-3.5 rounded-xl bg-arcum-card border border-arcum-border hover:border-arcum-gold text-white font-bold text-sm transition-all"
+              >
+                Create Withdrawal Ticket
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* TAB 5: AGENTS & MCP */}
+      {activeTab === 'agents' && (
+        <div className="max-w-4xl mx-auto space-y-8">
+          <div className="text-center space-y-2">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-arcum-gold/10 text-arcum-gold border border-arcum-gold/30 text-xs font-mono">
+              <Bot className="w-3.5 h-3.5" /> Owner-Authorized On-Chain Delegation
+            </div>
+            <h2 className="text-2xl sm:text-3xl font-bold text-white">Agent Router & MCP Integration</h2>
+            <p className="text-sm text-arcum-muted max-w-xl mx-auto">
+              Empower autonomous AI trading agents (via Model Context Protocol) to execute bounded trades. The contract strictly guarantees that sales proceeds always return to you.
+            </p>
+          </div>
+
+          <div className="bg-arcum-surface border border-arcum-border rounded-2xl p-8 space-y-6">
+            <div className="flex items-center justify-between border-b border-arcum-border pb-4">
+              <div>
+                <h3 className="font-bold text-white text-base">Active On-Chain Policy</h3>
+                <div className="text-xs text-arcum-muted font-mono">{agentPolicy.agentAddress}</div>
+              </div>
+              <span className={`px-2.5 py-1 rounded text-xs font-mono font-bold ${agentPolicy.revoked ? 'bg-arcum-down/15 text-arcum-down' : 'bg-arcum-up/15 text-arcum-up'}`}>
+                {agentPolicy.revoked ? 'REVOKED' : 'ACTIVE POLICY'}
+              </span>
+            </div>
+
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 font-mono text-xs">
+              <div className="bg-arcum-card p-3 rounded-lg border border-arcum-border">
+                <div className="text-arcum-muted">Total Budget</div>
+                <div className="text-base font-bold text-white font-tabular mt-1">${agentPolicy.budgetUsdg} USDG</div>
+              </div>
+              <div className="bg-arcum-card p-3 rounded-lg border border-arcum-border">
+                <div className="text-arcum-muted">Remaining Allowance</div>
+                <div className="text-base font-bold text-arcum-gold font-tabular mt-1">${agentPolicy.budgetUsdg - agentPolicy.spentUsdg} USDG</div>
+              </div>
+              <div className="bg-arcum-card p-3 rounded-lg border border-arcum-border">
+                <div className="text-arcum-muted">Max Per Trade</div>
+                <div className="text-base font-bold text-white font-tabular mt-1">${agentPolicy.maxPerTradeUsdg} USDG</div>
+              </div>
+              <div className="bg-arcum-card p-3 rounded-lg border border-arcum-border">
+                <div className="text-arcum-muted">Expires In</div>
+                <div className="text-base font-bold text-white font-tabular mt-1">14 Days</div>
+              </div>
+            </div>
+
+            <div className="space-y-2 text-xs font-mono">
+              <div className="text-arcum-muted">Allowed Underlyings:</div>
+              <div className="flex gap-2">
+                {agentPolicy.allowedStocks.map((sym) => (
+                  <span key={sym} className="px-2.5 py-1 rounded bg-arcum-card text-white border border-arcum-border">
+                    {sym}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            <div className="pt-4 border-t border-arcum-border flex items-center justify-between">
+              <span className="text-xs text-arcum-muted font-mono">Policy authority: AgentRouter.sol</span>
+              <button
+                onClick={() => {
+                  setAgentPolicy({ ...agentPolicy, revoked: !agentPolicy.revoked });
+                  alert(agentPolicy.revoked ? "Policy restored." : "Policy revoked immediately on-chain.");
+                }}
+                className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${
+                  agentPolicy.revoked
+                    ? 'bg-arcum-up text-arcum-dark'
+                    : 'bg-arcum-down/15 border border-arcum-down/40 text-arcum-down hover:bg-arcum-down hover:text-white'
+                }`}
+              >
+                {agentPolicy.revoked ? 'Re-Authorize Agent' : 'Instant Revoke Policy'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* TAB 6: SETTINGS */}
+      {activeTab === 'settings' && (
+        <div className="max-w-2xl mx-auto space-y-6">
+          <h2 className="text-xl font-bold text-white">Network & Protocol Settings</h2>
+          <div className="bg-arcum-surface border border-arcum-border rounded-xl p-6 space-y-4 font-mono text-xs">
+            <div className="space-y-1">
+              <span className="text-arcum-muted">Connected Network</span>
+              <div className="text-sm font-bold text-white">{CHAIN_CONFIG.chainName} (Chain ID {CHAIN_CONFIG.chainId})</div>
+            </div>
+            <div className="space-y-1">
+              <span className="text-arcum-muted">RPC Endpoint</span>
+              <input
+                type="text"
+                readOnly
+                value={CHAIN_CONFIG.rpcUrl}
+                className="w-full bg-arcum-card border border-arcum-border rounded-lg px-3 py-2 text-arcum-muted"
+              />
+            </div>
+            <div className="space-y-1">
+              <span className="text-arcum-muted">Slippage Tolerance</span>
+              <div className="flex gap-2">
+                {['0.5%', '1.0%', '2.0%'].map((slip) => (
+                  <button key={slip} className="px-3 py-1.5 rounded bg-arcum-card border border-arcum-border text-white hover:border-arcum-gold">
+                    {slip}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* TAB 7: ACTIVITY */}
+      {activeTab === 'activity' && (
+        <div className="space-y-4">
+          <h2 className="text-xl font-bold text-white">Recent Transaction Activity</h2>
+          <div className="bg-arcum-surface border border-arcum-border rounded-xl p-5 font-mono text-xs text-arcum-muted">
+            <div className="space-y-3">
+              <div className="flex justify-between items-center py-2 border-b border-arcum-border">
+                <span className="text-white">Bought 50.0 NVDA Up Options (Daily)</span>
+                <span className="text-arcum-gold">Block #18,942,109</span>
+              </div>
+              <div className="flex justify-between items-center py-2 border-b border-arcum-border">
+                <span className="text-white">Deposited 5,000 USDG to Writer Pool</span>
+                <span className="text-arcum-gold">Block #18,935,441</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Buy Modal */}
+      {showBuyModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+          <div className="bg-arcum-surface border border-arcum-border rounded-2xl max-w-md w-full p-6 space-y-6 gold-glow animate-in fade-in zoom-in-95">
+            <div className="flex items-center justify-between border-b border-arcum-border pb-3">
+              <h3 className="font-bold text-lg text-white">Confirm Option Order</h3>
+              <button
+                onClick={() => setShowBuyModal(false)}
+                className="text-arcum-muted hover:text-white"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="space-y-3 font-mono text-xs">
+              <div className="flex justify-between">
+                <span className="text-arcum-muted">Asset:</span>
+                <span className="text-white font-bold">{selectedStock.symbol}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-arcum-muted">Contract:</span>
+                <span className="text-white">{selectedSide === 'UP' ? 'Up (Call)' : 'Down (Put)'}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-arcum-muted">Strike:</span>
+                <span className="text-white">${selectedStrike.toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-arcum-muted">Units:</span>
+                <span className="text-white">{tradeUnits} Tokens</span>
+              </div>
+              <div className="flex justify-between text-sm font-bold pt-2 border-t border-arcum-border">
+                <span className="text-white">Total USDG:</span>
+                <span className="text-arcum-gold">${currentQuote.totalCostUsdg.toFixed(2)} USDG</span>
+              </div>
+            </div>
+
+            {/* Stepper Status */}
+            {buyStep === 'idle' && (
+              <button
+                onClick={handleExecuteBuy}
+                className="w-full py-3.5 rounded-xl bg-gradient-to-r from-arcum-gold to-arcum-goldMuted text-arcum-dark font-bold text-sm hover:opacity-95 transition-all"
+              >
+                Approve USDG & Execute Buy
+              </button>
+            )}
+
+            {buyStep === 'approving' && (
+              <div className="flex items-center justify-center gap-2 py-3.5 text-xs font-mono text-arcum-gold">
+                <RefreshCw className="w-4 h-4 animate-spin" /> Step 1/2: Approving exact USDG allowance...
+              </div>
+            )}
+
+            {buyStep === 'approved' && (
+              <div className="flex items-center justify-center gap-2 py-3.5 text-xs font-mono text-arcum-up">
+                <CheckCircle2 className="w-4 h-4" /> USDG Approved! Submitting option purchase...
+              </div>
+            )}
+
+            {buyStep === 'buying' && (
+              <div className="flex items-center justify-center gap-2 py-3.5 text-xs font-mono text-arcum-gold">
+                <RefreshCw className="w-4 h-4 animate-spin" /> Step 2/2: Confirming transaction on Robinhood Chain...
+              </div>
+            )}
+
+            {buyStep === 'success' && (
+              <div className="space-y-4 text-center">
+                <div className="w-12 h-12 rounded-full bg-arcum-up/20 text-arcum-up flex items-center justify-center mx-auto">
+                  <CheckCircle2 className="w-6 h-6" />
+                </div>
+                <div>
+                  <h4 className="font-bold text-white text-base">Option Bought Successfully!</h4>
+                  <p className="text-xs text-arcum-muted mt-1 font-mono">
+                    Minted {tradeUnits} {selectedStock.symbol} option tokens to your wallet.
+                  </p>
+                </div>
+                <button
+                  onClick={() => {
+                    setShowBuyModal(false);
+                    setActiveTab('positions');
+                  }}
+                  className="w-full py-3 rounded-lg bg-arcum-card border border-arcum-border text-white text-xs font-bold hover:bg-arcum-surface"
+                >
+                  View in Positions
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};

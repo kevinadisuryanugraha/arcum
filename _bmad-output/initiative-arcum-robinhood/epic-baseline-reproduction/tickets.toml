@@ -1,0 +1,67 @@
+# tickets.toml — Epic 1: Milestone A Baseline Reproduction
+
+[[entry]]
+id = 1
+type = "story"
+title = "Host toolchain and environment audit"
+description = "Audits host versions for Node, npm, uv, python, Bun, and Foundry against brief specifications."
+verify = "Terminal commands run and output versions matching requirements in BASELINE.md."
+covers = ["M-A"]
+after = []
+hitl = false
+risk = "low"
+
+[[entry]]
+id = 2
+type = "story"
+title = "Solidity contracts baseline assembly and compilation"
+description = "Assembles contracts package with OpenZeppelin v5 and compiles under Solidity 0.8.28 with Cancun EVM settings."
+verify = "Contracts compile cleanly with zero errors; artifact ABIs generated."
+covers = ["M-A"]
+after = [1]
+hitl = false
+risk = "medium"
+
+[[entry]]
+id = 3
+type = "story"
+title = "App Bun/TypeScript service audit and typecheck"
+description = "Sets up app package, resolves TypeScript definitions, and runs typecheck and unit tests."
+verify = "Typecheck and test commands complete with zero errors."
+covers = ["M-A"]
+after = [1]
+hitl = false
+risk = "medium"
+
+[[entry]]
+id = 4
+type = "story"
+title = "Volatility engine Python environment and pytest suite"
+description = "Sets up Python virtual environment with uv, installs vol-engine dependencies, and executes math tests."
+verify = "Pytest completes with 100% pass rate."
+covers = ["M-A"]
+after = [1]
+hitl = false
+risk = "medium"
+
+[[entry]]
+id = 5
+type = "story"
+title = "Web frontend assets and runtime module audit"
+description = "Assembles frontend architecture matching Lemniscate reference for 100% layout, style, and motion fidelity."
+verify = "Package installs cleanly and local development server renders reference pages."
+covers = ["M-A"]
+after = [1]
+hitl = false
+risk = "medium"
+
+[[entry]]
+id = 6
+type = "story"
+title = "Author BASELINE.md and register reproduction evidence"
+description = "Documents all audited versions, build outcomes, contract verification receipts, and gap notes in BASELINE.md."
+verify = "BASELINE.md exists with all sections complete and matches requirements in Section 2 & 22 of brief."
+covers = ["M-A"]
+after = [2, 3, 4, 5]
+hitl = false
+risk = "low"

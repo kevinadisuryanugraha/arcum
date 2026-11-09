@@ -1,0 +1,46 @@
+# tickets.toml — Initiative Arcum Robinhood
+# Epics in build order as defined in ARCUM_ROBINHOOD_DEV_BRIEF.md Section 23
+
+[[epic]]
+id = 1
+slug = "epic-baseline-reproduction"
+title = "Milestone A — Baseline Reproduction & Toolchain Verification"
+covers = ["M-A"]
+
+[[epic]]
+id = 2
+slug = "epic-financial-core-and-invariants"
+title = "Milestone B — Financial Core, Everlasting Maths & Invariants"
+covers = ["M-B"]
+after = [{ epic = 1, needs = "clean verified build of all packages and contracts" }]
+
+[[epic]]
+id = 3
+slug = "epic-operating-services"
+title = "Milestone C — Operating Services, Indexer, Keeper, Hedger & Vol Engine"
+covers = ["M-C"]
+after = [{ epic = 2, needs = "contract ABIs and verified local fork deployment" }]
+
+[[epic]]
+id = 4
+slug = "epic-frontend-visual-parity"
+title = "Milestone D — 100% Visual & Functional Parity Frontend (Arcum Adaptation)"
+covers = ["M-D"]
+after = [{ epic = 3, needs = "active API and indexer services for realistic mock and live telemetry" }]
+
+[[epic]]
+id = 5
+slug = "epic-agents-mcp-and-aa"
+title = "Milestone E — Agent Router, MCP Server, Paid Reads & Account Abstraction"
+covers = ["M-E"]
+after = [{ epic = 2, needs = "AgentRouter and Engine contracts deployed" }]
+
+[[epic]]
+id = 6
+slug = "epic-production-readiness-and-release"
+title = "Milestone F — Mainnet Release Readiness, Manifests, Audits & Handover"
+covers = ["M-F"]
+after = [
+  { epic = 4, needs = "complete verified dashboard and marketing frontend" },
+  { epic = 5, needs = "passing agent and contract test suites" }
+]
