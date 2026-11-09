@@ -259,18 +259,19 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
             </div>
 
             {/* Strikes Matrix */}
-            <div className="bg-arcum-surface border border-arcum-border rounded-xl overflow-hidden">
-              <div className="px-5 py-4 border-b border-arcum-border flex items-center justify-between">
-                <div>
-                  <h3 className="font-bold text-white text-base">Select Strike Price</h3>
-                  <p className="text-xs text-arcum-muted">Everlasting options hold no expiry date. Holding cost continuously updates effective payout.</p>
+            <div className="doppelrand-shell">
+              <div className="doppelrand-core overflow-hidden">
+                <div className="px-6 py-4 border-b border-arcum-border flex items-center justify-between">
+                  <div>
+                    <h3 className="font-bold text-white text-base font-heading">Select Strike Price</h3>
+                    <p className="text-xs text-arcum-muted">Everlasting options hold no expiry date. Holding cost continuously updates effective payout.</p>
+                  </div>
+                  <div className="text-xs font-mono text-arcum-gold px-2.5 py-1 rounded-full bg-arcum-gold/10 border border-arcum-gold/20">
+                    IV {(activeIvBps / 100).toFixed(0)}%
+                  </div>
                 </div>
-                <div className="text-xs font-mono text-arcum-gold">
-                  IV {(activeIvBps / 100).toFixed(0)}%
-                </div>
-              </div>
 
-              <div className="divide-y divide-arcum-border font-mono text-xs">
+                <div className="divide-y divide-arcum-border font-mono text-xs">
                 {strikes.map((strikeVal) => {
                   const isAtm = Math.abs(strikeVal - selectedStock.price) < strikeInterval;
                   const isSelected = selectedStrike === strikeVal;
@@ -327,6 +328,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
                     </div>
                   );
                 })}
+                </div>
               </div>
             </div>
 
@@ -341,18 +343,19 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
 
           {/* Right Column: Execution Order Card */}
           <div className="space-y-6">
-            <div className="bg-arcum-surface border border-arcum-border rounded-xl p-6 space-y-6 gold-glow">
-              <div className="flex items-center justify-between border-b border-arcum-border pb-4">
-                <div>
-                  <h3 className="font-bold text-lg text-white">Order Summary</h3>
-                  <div className="text-xs text-arcum-goldMuted font-mono">
-                    {selectedStock.symbol} ${selectedStrike.toFixed(2)} {selectedSide === 'UP' ? 'Up (Call)' : 'Down (Put)'}
+            <div className="doppelrand-shell">
+              <div className="doppelrand-core p-6 space-y-6">
+                <div className="flex items-center justify-between border-b border-arcum-border pb-4">
+                  <div>
+                    <h3 className="font-bold text-lg text-white font-heading">Order Summary</h3>
+                    <div className="text-xs text-arcum-goldMuted font-mono">
+                      {selectedStock.symbol} ${selectedStrike.toFixed(2)} {selectedSide === 'UP' ? 'Up (Call)' : 'Down (Put)'}
+                    </div>
                   </div>
+                  <span className="px-3 py-1 rounded-full text-xs font-mono bg-white/[0.05] border border-white/10 text-white font-medium">
+                    {selectedSpeed}
+                  </span>
                 </div>
-                <span className="px-2.5 py-1 rounded text-xs font-mono bg-arcum-card border border-arcum-border text-white">
-                  {selectedSpeed}
-                </span>
-              </div>
 
               {/* Units Input */}
               <div className="space-y-2">
@@ -405,40 +408,50 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
                 </div>
               </div>
 
-              {/* Action Button */}
+              {/* Action Button - Button in Button Architecture */}
               {walletConnected ? (
                 <button
                   onClick={() => {
                     setBuyStep('idle');
                     setShowBuyModal(true);
                   }}
-                  className={`w-full py-3.5 rounded-xl font-bold text-sm shadow-md transition-all flex items-center justify-center gap-2 ${
+                  className={`group w-full pl-6 pr-2 py-2.5 rounded-full font-bold text-sm shadow-md transition-all flex items-center justify-between active:scale-[0.98] ${
                     selectedSide === 'UP'
-                      ? 'bg-arcum-up text-arcum-dark hover:opacity-95'
-                      : 'bg-arcum-down text-white hover:opacity-95'
+                      ? 'bg-arcum-up text-arcum-dark hover:opacity-95 shadow-up-bloom'
+                      : 'bg-arcum-down text-white hover:opacity-95 shadow-down-bloom'
                   }`}
                 >
-                  Buy {selectedSide === 'UP' ? 'Up (Call)' : 'Down (Put)'} Option
+                  <span className="tracking-wide">Buy {selectedSide === 'UP' ? 'Up (Call)' : 'Down (Put)'} Option</span>
+                  <div className="w-8 h-8 rounded-full bg-black/15 flex items-center justify-center group-hover:translate-x-0.5 transition-transform">
+                    <ArrowUpRight className="w-4 h-4" />
+                  </div>
                 </button>
               ) : (
                 <button
                   onClick={onConnectWallet}
-                  className="w-full py-3.5 rounded-xl bg-gradient-to-r from-arcum-gold to-arcum-goldMuted text-arcum-dark font-bold text-sm shadow-md hover:opacity-95 transition-all flex items-center justify-center gap-2"
+                  className="group w-full pl-6 pr-2 py-2.5 rounded-full bg-gradient-to-r from-arcum-gold to-arcum-goldMuted text-arcum-dark font-bold text-sm shadow-gold-bloom hover:opacity-95 transition-all flex items-center justify-between active:scale-[0.98]"
                 >
-                  <Wallet className="w-4 h-4" /> Connect Wallet to Trade
+                  <span>Connect Wallet to Trade</span>
+                  <div className="w-8 h-8 rounded-full bg-black/15 flex items-center justify-center group-hover:translate-x-0.5 transition-transform">
+                    <ArrowUpRight className="w-4 h-4" />
+                  </div>
                 </button>
               )}
             </div>
+          </div>
 
-            {/* Interactive What-If PnL Simulator Card */}
-            <div className="bg-arcum-surface border border-arcum-border rounded-xl p-5 space-y-4">
-              <div className="flex items-center justify-between border-b border-arcum-border pb-3">
-                <div className="flex items-center gap-2 text-white font-bold text-sm">
-                  <span className="w-2 h-2 rounded-full bg-arcum-gold" />
-                  What-If PnL Simulator
+            {/* Interactive What-If PnL Simulator Card (Doppelrand Architecture) */}
+            <div className="doppelrand-shell">
+              <div className="doppelrand-core p-5 space-y-4">
+                <div className="flex items-center justify-between border-b border-arcum-border pb-3">
+                  <div className="flex items-center gap-2 text-white font-bold text-sm font-heading">
+                    <span className="w-2 h-2 rounded-full bg-arcum-gold shadow-gold-bloom" />
+                    What-If PnL Simulator
+                  </div>
+                  <span className="text-[10px] text-arcum-goldMuted font-mono px-2 py-0.5 rounded-full bg-white/[0.04]">
+                    Simulates Norm Decay
+                  </span>
                 </div>
-                <span className="text-[10px] text-arcum-muted font-mono">Simulates Norm Decay</span>
-              </div>
 
               {/* Slider 1: Price Move */}
               <div className="space-y-1.5 font-mono text-xs">
@@ -500,6 +513,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
             </div>
           </div>
         </div>
+      </div>
       )}
 
       {/* TAB 2: ACTIVE POSITIONS */}

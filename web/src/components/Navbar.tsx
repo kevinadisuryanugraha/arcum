@@ -1,5 +1,5 @@
 import React from 'react';
-import { Activity, Shield, Wallet, ExternalLink, ChevronDown, CheckCircle2 } from 'lucide-react';
+import { Shield, Wallet, ArrowUpRight, ChevronDown, CheckCircle2 } from 'lucide-react';
 import { SessionKind } from '../types';
 
 interface NavbarProps {
@@ -21,28 +21,28 @@ export const Navbar: React.FC<NavbarProps> = ({
     switch (session) {
       case 'REGULAR':
         return (
-          <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-arcum-up/10 text-arcum-up border border-arcum-up/30">
+          <span className="flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-mono font-medium bg-arcum-up/10 text-arcum-up border border-arcum-up/30 shadow-up-bloom/20">
             <span className="w-1.5 h-1.5 rounded-full bg-arcum-up animate-pulse" />
-            NYSE Regular (Active)
+            NYSE Regular
           </span>
         );
       case 'EXTENDED':
         return (
-          <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-amber-500/10 text-amber-400 border border-amber-500/30">
+          <span className="flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-mono font-medium bg-amber-500/10 text-amber-400 border border-amber-500/30">
             <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
-            Extended Hours
+            Extended
           </span>
         );
       case 'CLOSED':
         return (
-          <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-arcum-border text-arcum-muted border border-arcum-borderLight">
+          <span className="flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-mono font-medium bg-white/5 text-arcum-muted border border-white/10">
             <span className="w-1.5 h-1.5 rounded-full bg-arcum-muted" />
-            Closed (Continuous Decay)
+            Closed (Decay Active)
           </span>
         );
       case 'HALTED':
         return (
-          <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-arcum-down/10 text-arcum-down border border-arcum-down/30">
+          <span className="flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-mono font-medium bg-arcum-down/10 text-arcum-down border border-arcum-down/30">
             <span className="w-1.5 h-1.5 rounded-full bg-arcum-down animate-ping" />
             Market Halted
           </span>
@@ -62,43 +62,49 @@ export const Navbar: React.FC<NavbarProps> = ({
   ];
 
   return (
-    <header className="sticky top-0 z-50 bg-arcum-bg/90 backdrop-blur-md border-b border-arcum-border">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-        {/* Brand Logo */}
+    <div className="sticky top-3 z-50 px-4 sm:px-6 max-w-7xl mx-auto w-full transition-all">
+      <header className="glass-island rounded-2xl px-4 sm:px-6 py-2.5 flex items-center justify-between border border-white/10">
+        {/* Brand Group */}
         <div className="flex items-center gap-8">
           <button
             onClick={() => onNavigate('home')}
-            className="flex items-center gap-2.5 text-left group"
+            className="flex items-center gap-3 text-left group transition-transform active:scale-[0.98]"
           >
-            <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-arcum-gold to-arcum-goldMuted flex items-center justify-center text-arcum-dark font-bold text-lg shadow-lg group-hover:scale-105 transition-transform">
-              <span className="font-mono tracking-tighter">A</span>
+            {/* Double-bezel hardware emblem */}
+            <div className="w-9 h-9 rounded-xl p-0.5 bg-gradient-to-b from-arcum-gold to-arcum-goldDark/30 ring-1 ring-arcum-gold/40 shadow-gold-bloom/30 flex items-center justify-center">
+              <div className="w-full h-full rounded-[9px] bg-arcum-dark flex items-center justify-center text-arcum-gold font-bold text-base font-brand">
+                A
+              </div>
             </div>
             <div>
               <div className="flex items-center gap-1.5">
-                <span className="font-bold text-xl tracking-tight text-white font-sans group-hover:text-arcum-gold transition-colors">
+                <span className="font-bold text-lg tracking-wider text-white font-brand group-hover:text-arcum-gold transition-colors">
                   ARCUM
                 </span>
-                <span className="text-[10px] px-1.5 py-0.5 rounded bg-arcum-card border border-arcum-border text-arcum-goldMuted font-mono">
+                <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-white/[0.05] border border-white/10 text-arcum-gold font-mono font-medium">
                   4663
                 </span>
               </div>
-              <p className="text-[10px] text-arcum-muted tracking-wider uppercase">Everlasting Options</p>
+              <p className="text-[9px] text-arcum-muted font-mono tracking-widest uppercase">Everlasting Options</p>
             </div>
           </button>
 
-          {/* Navigation Links */}
+          {/* Navigation Links with Hover Spotlight */}
           <nav className="hidden md:flex items-center gap-1">
             {navLinks.map((link) => (
               <button
                 key={link.id}
                 onClick={() => onNavigate(link.id)}
-                className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
+                className={`relative px-3.5 py-1.5 rounded-xl text-xs font-medium tracking-wide transition-all ${
                   currentRoute === link.id
-                    ? 'text-arcum-gold bg-arcum-gold/10'
-                    : 'text-arcum-muted hover:text-white hover:bg-arcum-surface'
+                    ? 'text-white bg-white/[0.08] shadow-inner font-semibold'
+                    : 'text-arcum-muted hover:text-white hover:bg-white/[0.04]'
                 }`}
               >
                 {link.label}
+                {currentRoute === link.id && (
+                  <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-4 h-0.5 rounded-full bg-arcum-gold shadow-gold-bloom" />
+                )}
               </button>
             ))}
           </nav>
@@ -111,30 +117,39 @@ export const Navbar: React.FC<NavbarProps> = ({
             {getSessionBadge()}
           </div>
 
-          {/* Network Pill */}
-          <div className="hidden lg:flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-mono bg-arcum-surface border border-arcum-border text-arcum-muted">
-            <span className="w-2 h-2 rounded-full bg-arcum-gold" />
+          {/* Network Badge */}
+          <div className="hidden lg:flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-mono bg-white/[0.04] border border-white/[0.08] text-arcum-muted">
+            <span className="w-1.5 h-1.5 rounded-full bg-arcum-gold" />
             Robinhood Chain
           </div>
 
-          {/* Wallet Button */}
+          {/* Button-in-Button Wallet Pill */}
           <button
             onClick={onConnectWallet}
-            className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-sm font-medium transition-all ${
+            className={`group pl-3.5 pr-1.5 py-1.5 rounded-full text-xs font-medium transition-all flex items-center gap-2.5 active:scale-[0.98] ${
               walletConnected
-                ? 'bg-arcum-surface border border-arcum-gold/40 text-arcum-gold hover:border-arcum-gold'
-                : 'bg-gradient-to-r from-arcum-gold to-arcum-goldMuted text-arcum-dark font-semibold hover:opacity-95 shadow-md shadow-arcum-gold/10'
+                ? 'bg-white/[0.06] border border-arcum-gold/40 text-arcum-gold hover:border-arcum-gold'
+                : 'bg-gradient-to-r from-arcum-gold to-arcum-goldMuted text-arcum-dark font-bold shadow-gold-bloom'
             }`}
           >
-            <Wallet className="w-4 h-4" />
             {walletConnected ? (
-              <span className="font-mono text-xs">0x71C8...a49B (5,000 USDG)</span>
+              <>
+                <span className="font-mono text-[11px]">0x71C8...a49B</span>
+                <span className="text-[10px] px-2 py-0.5 rounded-full bg-arcum-gold/15 text-arcum-gold font-mono font-bold">
+                  5,000 USDG
+                </span>
+              </>
             ) : (
-              <span>Connect Wallet</span>
+              <>
+                <span>Connect Wallet</span>
+                <div className="w-6 h-6 rounded-full bg-arcum-dark/20 flex items-center justify-center text-arcum-dark group-hover:translate-x-0.5 transition-transform">
+                  <ArrowUpRight className="w-3.5 h-3.5" />
+                </div>
+              </>
             )}
           </button>
         </div>
-      </div>
-    </header>
+      </header>
+    </div>
   );
 };

@@ -4,8 +4,8 @@
 
 @layer base {
   body {
-    @apply bg-arcum-bg text-arcum-text antialiased selection:bg-arcum-gold/20 selection:text-arcum-gold;
-    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    @apply bg-arcum-bg text-arcum-text antialiased selection:bg-arcum-gold/25 selection:text-arcum-gold;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11", "ss01", "ss02";
   }
 
   .font-tabular {
@@ -13,36 +13,50 @@
   }
 }
 
-/* Custom Gold Glow & Card Effects */
-.gold-glow {
-  box-shadow: 0 0 25px -5px rgba(212, 175, 55, 0.15);
+/* Subtle architectural grid background with spotlight vignette */
+.ambient-grid {
+  background-image: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 32px 32px;
 }
 
-.gold-border-glow {
-  border-color: rgba(212, 175, 55, 0.35);
-  box-shadow: 0 0 15px -3px rgba(212, 175, 55, 0.2);
+.radial-spotlight {
+  background: radial-gradient(ellipse 60% 50% at 50% -10%, rgba(212, 175, 55, 0.12), transparent 70%);
 }
 
-.up-glow {
-  box-shadow: 0 0 20px -5px rgba(16, 185, 129, 0.2);
+/* Doppelrand (Double-Bezel Hardware Architecture) */
+.doppelrand-shell {
+  @apply rounded-[1.75rem] p-1.5 bg-gradient-to-b from-white/[0.08] via-white/[0.03] to-transparent ring-1 ring-white/[0.08] shadow-bezel-outer;
 }
 
-.down-glow {
-  box-shadow: 0 0 20px -5px rgba(244, 63, 94, 0.2);
+.doppelrand-core {
+  @apply rounded-[calc(1.75rem-0.375rem)] bg-arcum-surface shadow-bezel-inner;
 }
 
-/* Smooth custom scrollbars */
+/* Floating Glass Island */
+.glass-island {
+  @apply bg-arcum-bg/80 backdrop-blur-2xl border border-white/[0.08] shadow-[0_8px_32px_0_rgba(0,0,0,0.6)];
+}
+
+/* Shimmer Sheen */
+.shimmer-mask {
+  mask-image: linear-gradient(60deg, black 25%, rgba(0, 0, 0, 0.2) 50%, black 75%);
+  mask-size: 400% 100%;
+}
+
+/* Custom Scrollbars */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #070B19;
+  background: #050814;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #1E2A4A;
+  background: rgba(255, 255, 255, 0.12);
   border-radius: 9999px;
 }
 
