@@ -1,5 +1,5 @@
 import React from 'react';
-import { TrendingUp, TrendingDown, Shield, DollarSign, ArrowRight, CheckCircle2 } from 'lucide-react';
+import { ArrowRight, TrendingUp, TrendingDown, Shield, Layers, DollarSign } from 'lucide-react';
 
 interface ProductsPageProps {
   onNavigate: (route: string) => void;
@@ -7,108 +7,138 @@ interface ProductsPageProps {
 
 export const ProductsPage: React.FC<ProductsPageProps> = ({ onNavigate }) => {
   return (
-    <div className="max-w-5xl mx-auto px-4 py-12 space-y-16">
-      <div className="text-center space-y-3">
-        <h1 className="text-3xl sm:text-5xl font-bold text-white font-sans">Arcum Financial Products</h1>
-        <p className="text-base text-arcum-muted max-w-2xl mx-auto">
-          Built on Robinhood Chain mainnet with USDG settlement. Four synchronized mechanisms designed to deliver everlasting options liquidity.
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-12 lg:py-16 space-y-12">
+      <div className="space-y-4 max-w-3xl">
+        <span className="font-mono text-xs uppercase tracking-widest text-arcum-cyan font-bold">
+          Non-Expiring Derivatives Suite
+        </span>
+        <h1 className="text-3xl sm:text-5xl font-display font-bold text-white tracking-tight">
+          Arcum Derivative Mechanisms
+        </h1>
+        <p className="text-base text-arcum-muted leading-relaxed">
+          Native to Robinhood Chain with USDG settlement. Four synchronized mechanisms designed to eliminate expiration friction and deliver deep liquidity.
         </p>
       </div>
 
-      <div className="space-y-8">
-        {/* Product 1 */}
-        <div className="bg-arcum-surface border border-arcum-border rounded-2xl p-8 grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
-          <div className="md:col-span-2 space-y-3">
+      <div className="space-y-6">
+        {/* Product 1: Up Options */}
+        <div className="p-8 rounded-xl bg-arcum-bgElevated border border-white/10 grid grid-cols-1 lg:grid-cols-12 gap-6 items-center hover:border-arcum-cyan/30 transition-all">
+          <div className="lg:col-span-8 space-y-3">
             <div className="flex items-center gap-2">
-              <span className="w-8 h-8 rounded-lg bg-arcum-up/10 text-arcum-up flex items-center justify-center font-bold">
-                <TrendingUp className="w-5 h-5" />
+              <span className="text-xs font-mono px-2 py-0.5 rounded bg-arcum-up/10 text-arcum-up font-bold">
+                CALL
               </span>
-              <h2 className="text-2xl font-bold text-white">Up Options (Calls)</h2>
+              <h2 className="text-2xl font-display font-bold text-white">Up Options (Calls)</h2>
             </div>
             <p className="text-sm text-arcum-muted leading-relaxed">
-              Gain leveraged upside exposure to Stock Tokens (NVDA, TSLA, SPY, QQQ, AAPL). Pay a bounded USDG amount upfront. Zero margin calls or liquidations. Effective units decay continuously via the series normalization factor.
+              Gain leveraged upside exposure to tokenized stocks (NVDA, TSLA, SPY, QQQ, AAPL). Pay a bounded USDG premium upfront. 
+              Zero margin calls or liquidations. Effective units decay continuously via the series normalization factor.
             </p>
-            <div className="flex gap-4 text-xs font-mono text-arcum-gold">
-              <span>Daily Speed (tau = 1d)</span>
+            <div className="flex gap-4 text-xs font-mono text-arcum-muted pt-1">
+              <span>Daily Speed (τ = 86,400s)</span>
               <span>•</span>
-              <span>Weekly Speed (tau = 7d)</span>
+              <span>Weekly Speed (τ = 604,800s)</span>
+              <span>•</span>
+              <span className="text-emerald-400">3 bps Protocol Fee</span>
             </div>
           </div>
-          <div className="text-right">
+          <div className="lg:col-span-4 lg:text-right">
             <button
               onClick={() => onNavigate('dashboard')}
-              className="px-6 py-3 rounded-xl bg-arcum-up text-arcum-dark font-bold text-sm hover:opacity-95"
+              className="px-6 py-3 rounded-lg bg-gradient-to-r from-arcum-cyan to-arcum-cobalt text-black font-display font-semibold text-xs tracking-wider uppercase hover:opacity-95 transition-all shadow-[0_0_20px_rgba(25,230,255,0.3)]"
             >
               Trade Up Calls
             </button>
           </div>
         </div>
 
-        {/* Product 2 */}
-        <div className="bg-arcum-surface border border-arcum-border rounded-2xl p-8 grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
-          <div className="md:col-span-2 space-y-3">
+        {/* Product 2: Down Options */}
+        <div className="p-8 rounded-xl bg-arcum-bgElevated border border-white/10 grid grid-cols-1 lg:grid-cols-12 gap-6 items-center hover:border-arcum-cyan/30 transition-all">
+          <div className="lg:col-span-8 space-y-3">
             <div className="flex items-center gap-2">
-              <span className="w-8 h-8 rounded-lg bg-arcum-down/10 text-arcum-down flex items-center justify-center font-bold">
-                <TrendingDown className="w-5 h-5" />
+              <span className="text-xs font-mono px-2 py-0.5 rounded bg-arcum-down/10 text-arcum-down font-bold">
+                PUT
               </span>
-              <h2 className="text-2xl font-bold text-white">Down Options (Puts)</h2>
+              <h2 className="text-2xl font-display font-bold text-white">Down Options (Puts)</h2>
             </div>
             <p className="text-sm text-arcum-muted leading-relaxed">
-              Profit from downside moves or hedge underlying synthetic equity. Strike selection gives pure non-linear put exposure without expiry constraints.
+              Profit from downside stock moves or hedge underlying synthetic equity. 
+              Closed-form put-call parity (V_put = V_call - (S - K)) guarantees exact non-linear pricing without expiry cliffs.
             </p>
+            <div className="flex gap-4 text-xs font-mono text-arcum-muted pt-1">
+              <span>Daily & Weekly Funding</span>
+              <span>•</span>
+              <span>USDG Settlement</span>
+              <span>•</span>
+              <span className="text-arcum-cyan">Non-Custodial</span>
+            </div>
           </div>
-          <div className="text-right">
+          <div className="lg:col-span-4 lg:text-right">
             <button
               onClick={() => onNavigate('dashboard')}
-              className="px-6 py-3 rounded-xl bg-arcum-down text-white font-bold text-sm hover:opacity-95"
+              className="px-6 py-3 rounded-lg bg-arcum-surface hover:bg-white/10 border border-white/10 text-white font-display font-semibold text-xs tracking-wider uppercase transition-all"
             >
               Trade Down Puts
             </button>
           </div>
         </div>
 
-        {/* Product 3 */}
-        <div className="bg-arcum-surface border border-arcum-border rounded-2xl p-8 grid grid-cols-1 md:grid-cols-3 gap-6 items-center gold-border-glow">
-          <div className="md:col-span-2 space-y-3">
+        {/* Product 3: 1-Click Shield */}
+        <div className="p-8 rounded-xl bg-arcum-bgElevated border border-white/10 grid grid-cols-1 lg:grid-cols-12 gap-6 items-center hover:border-arcum-cyan/30 transition-all">
+          <div className="lg:col-span-8 space-y-3">
             <div className="flex items-center gap-2">
-              <span className="w-8 h-8 rounded-lg bg-arcum-gold/10 text-arcum-gold flex items-center justify-center font-bold">
-                <Shield className="w-5 h-5" />
+              <span className="text-xs font-mono px-2 py-0.5 rounded bg-arcum-cyan/10 text-arcum-cyan font-bold">
+                PROTECTION
               </span>
-              <h2 className="text-2xl font-bold text-white">Shield Portfolio Protection</h2>
+              <h2 className="text-2xl font-display font-bold text-white">1-Click Automated Shield</h2>
             </div>
             <p className="text-sm text-arcum-muted leading-relaxed">
-              The 1-click insurance desk for Stock Tokens. Shield inspects your wallet holding, selects an eligible listed Down series below the requested percentage floor, and executes exact bounded hedging.
+              Automated downside floor for stock token holders. Select your protection level (5% or 10% below spot) and Shield purchases 
+              the optimal weekly put series in a single transaction, holding the floor indefinitely until you decide to close.
             </p>
+            <div className="flex gap-4 text-xs font-mono text-arcum-muted pt-1">
+              <span>Weekly Speed (Low Drag)</span>
+              <span>•</span>
+              <span>Zero Liquidation Risk</span>
+            </div>
           </div>
-          <div className="text-right">
+          <div className="lg:col-span-4 lg:text-right">
             <button
               onClick={() => onNavigate('dashboard')}
-              className="px-6 py-3 rounded-xl bg-gradient-to-r from-arcum-gold to-arcum-goldMuted text-arcum-dark font-bold text-sm hover:opacity-95"
+              className="px-6 py-3 rounded-lg bg-arcum-surface hover:bg-white/10 border border-white/10 text-white font-display font-semibold text-xs tracking-wider uppercase transition-all"
             >
-              Activate Shield
+              Shield Portfolio
             </button>
           </div>
         </div>
 
-        {/* Product 4 */}
-        <div className="bg-arcum-surface border border-arcum-border rounded-2xl p-8 grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
-          <div className="md:col-span-2 space-y-3">
+        {/* Product 4: Writer Pool */}
+        <div className="p-8 rounded-xl bg-arcum-bgElevated border border-white/10 grid grid-cols-1 lg:grid-cols-12 gap-6 items-center hover:border-arcum-cyan/30 transition-all">
+          <div className="lg:col-span-8 space-y-3">
             <div className="flex items-center gap-2">
-              <span className="w-8 h-8 rounded-lg bg-purple-500/10 text-purple-400 flex items-center justify-center font-bold">
-                <DollarSign className="w-5 h-5" />
+              <span className="text-xs font-mono px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 font-bold">
+                YIELD
               </span>
-              <h2 className="text-2xl font-bold text-white">USDG Writer Pool</h2>
+              <h2 className="text-2xl font-display font-bold text-white">USDG Writer Pool (ERC-4626)</h2>
             </div>
             <p className="text-sm text-arcum-muted leading-relaxed">
-              Underwrite everlasting options as a liquidity provider. Earn 80% protocol fee distribution + funding income. Governed by 24h deposit locks and 72h asynchronous withdrawal queues.
+              Deposit USDG to underwrite the options sold by the engine. Earn option premiums, trade fees, and daily norm decay yield. 
+              Features a 24-hour deposit lock and 72-hour withdrawal queue with pro-rata NAV settlement.
             </p>
+            <div className="flex gap-4 text-xs font-mono text-arcum-muted pt-1">
+              <span className="text-emerald-400">18% - 32% Projected APY</span>
+              <span>•</span>
+              <span>12-Decimal Virtual Shares</span>
+              <span>•</span>
+              <span>Reserve Fund Protected</span>
+            </div>
           </div>
-          <div className="text-right">
+          <div className="lg:col-span-4 lg:text-right">
             <button
               onClick={() => onNavigate('dashboard')}
-              className="px-6 py-3 rounded-xl bg-arcum-card border border-arcum-border hover:border-arcum-gold text-white font-bold text-sm"
+              className="px-6 py-3 rounded-lg bg-arcum-surface hover:bg-white/10 border border-white/10 text-white font-display font-semibold text-xs tracking-wider uppercase transition-all"
             >
-              Deposit Liquidity
+              Deposit USDG
             </button>
           </div>
         </div>

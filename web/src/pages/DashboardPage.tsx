@@ -182,7 +182,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
                 onClick={() => setActiveTab(tab.id)}
                 className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                   isActive
-                    ? 'bg-arcum-gold/15 text-arcum-gold border border-arcum-gold/40 shadow-sm'
+                    ? 'bg-arcum-cyan/15 text-arcum-cyan border border-arcum-cyan/30 shadow-sm'
                     : 'text-arcum-muted hover:text-white hover:bg-arcum-surface'
                 }`}
               >
@@ -197,7 +197,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
         <div className="flex items-center gap-3 bg-arcum-surface border border-arcum-border px-3 py-1.5 rounded-lg text-xs font-mono">
           <span className="text-arcum-muted">Selected Underlying:</span>
           <span className="font-bold text-white font-sans">{selectedStock.symbol}</span>
-          <span className="text-arcum-gold font-tabular">${selectedStock.price.toFixed(2)}</span>
+          <span className="text-arcum-cyan font-tabular">${selectedStock.price.toFixed(2)}</span>
         </div>
       </div>
 
@@ -239,7 +239,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
                   onClick={() => setSelectedSpeed('DAILY')}
                   className={`px-3 py-1.5 rounded-md text-xs font-mono font-medium transition-all ${
                     selectedSpeed === 'DAILY'
-                      ? 'bg-arcum-gold text-arcum-dark font-bold'
+                      ? 'bg-gradient-to-r from-arcum-cyan to-arcum-cobalt text-black font-bold'
                       : 'bg-arcum-card text-arcum-muted hover:text-white border border-arcum-border'
                   }`}
                 >
@@ -249,7 +249,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
                   onClick={() => setSelectedSpeed('WEEKLY')}
                   className={`px-3 py-1.5 rounded-md text-xs font-mono font-medium transition-all ${
                     selectedSpeed === 'WEEKLY'
-                      ? 'bg-arcum-gold text-arcum-dark font-bold'
+                      ? 'bg-gradient-to-r from-arcum-cyan to-arcum-cobalt text-black font-bold'
                       : 'bg-arcum-card text-arcum-muted hover:text-white border border-arcum-border'
                   }`}
                 >
@@ -266,7 +266,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
                     <h3 className="font-bold text-white text-base font-heading">Select Strike Price</h3>
                     <p className="text-xs text-arcum-muted">Everlasting options hold no expiry date. Holding cost continuously updates effective payout.</p>
                   </div>
-                  <div className="text-xs font-mono text-arcum-gold px-2.5 py-1 rounded-full bg-arcum-gold/10 border border-arcum-gold/20">
+                  <div className="text-xs font-mono text-arcum-cyan px-2.5 py-1 rounded-full bg-arcum-gold/10 border border-arcum-gold/20">
                     IV {(activeIvBps / 100).toFixed(0)}%
                   </div>
                 </div>
@@ -290,14 +290,14 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
                       onClick={() => setSelectedStrike(strikeVal)}
                       className={`px-5 py-3.5 flex items-center justify-between cursor-pointer transition-colors ${
                         isSelected
-                          ? 'bg-arcum-card border-l-4 border-l-arcum-gold'
+                          ? 'bg-arcum-card border-l-4 border-l-arcum-cyan'
                           : 'hover:bg-arcum-card/50'
                       }`}
                     >
                       <div className="flex items-center gap-3">
                         <span className="font-bold text-sm text-white font-sans">${strikeVal.toFixed(2)}</span>
                         {isAtm && (
-                          <span className="text-[10px] px-2 py-0.5 rounded bg-arcum-gold/15 text-arcum-gold border border-arcum-gold/30">
+                          <span className="text-[10px] px-2 py-0.5 rounded bg-arcum-cyan/15 text-arcum-cyan border border-arcum-cyan/25">
                             ATM
                           </span>
                         )}
@@ -318,7 +318,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
                         <button
                           className={`px-3 py-1 rounded text-xs font-medium transition-colors ${
                             isSelected
-                              ? 'bg-arcum-gold text-arcum-dark font-bold'
+                              ? 'bg-gradient-to-r from-arcum-cyan to-arcum-cobalt text-black font-bold'
                               : 'bg-arcum-surface border border-arcum-border text-arcum-muted hover:text-white'
                           }`}
                         >
@@ -334,7 +334,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
 
             {/* Norm Decay Infobox */}
             <div className="bg-arcum-card/40 border border-arcum-border rounded-xl p-4 flex items-start gap-3 text-xs text-arcum-muted">
-              <HelpCircle className="w-4 h-4 text-arcum-gold flex-shrink-0 mt-0.5" />
+              <HelpCircle className="w-4 h-4 text-arcum-cyan flex-shrink-0 mt-0.5" />
               <div>
                 <span className="font-semibold text-white">How holding cost works in Arcum:</span> Option buyers pay continuous holding cost directly in-kind through the series normalization factor (Norm_t). While your ERC-20 token count stays constant at {tradeUnits} tokens, your effective exercisable units decrease continuously until sold.
               </div>
@@ -348,7 +348,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
                 <div className="flex items-center justify-between border-b border-arcum-border pb-4">
                   <div>
                     <h3 className="font-bold text-lg text-white font-heading">Order Summary</h3>
-                    <div className="text-xs text-arcum-goldMuted font-mono">
+                    <div className="text-xs text-arcum-muted font-mono">
                       {selectedStock.symbol} ${selectedStrike.toFixed(2)} {selectedSide === 'UP' ? 'Up (Call)' : 'Down (Put)'}
                     </div>
                   </div>
@@ -400,11 +400,11 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
                 </div>
                 <div className="flex justify-between">
                   <span className="text-arcum-muted">Delta (Δ):</span>
-                  <span className="text-arcum-gold font-tabular">{currentQuote.delta.toFixed(3)}</span>
+                  <span className="text-arcum-cyan font-tabular">{currentQuote.delta.toFixed(3)}</span>
                 </div>
                 <div className="flex justify-between pt-2 border-t border-arcum-border text-sm font-bold">
                   <span className="text-white">Total USDG Cost:</span>
-                  <span className="text-arcum-gold font-tabular">${currentQuote.totalCostUsdg.toFixed(2)} USDG</span>
+                  <span className="text-arcum-cyan font-tabular">${currentQuote.totalCostUsdg.toFixed(2)} USDG</span>
                 </div>
               </div>
 
@@ -429,7 +429,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
               ) : (
                 <button
                   onClick={onConnectWallet}
-                  className="group w-full pl-6 pr-2 py-2.5 rounded-full bg-gradient-to-r from-arcum-gold to-arcum-goldMuted text-arcum-dark font-bold text-sm shadow-gold-bloom hover:opacity-95 transition-all flex items-center justify-between active:scale-[0.98]"
+                  className="group w-full pl-6 pr-2 py-2.5 rounded-full bg-gradient-to-r from-arcum-cyan to-arcum-cobalt text-black font-bold text-sm shadow-[0_0_12px_rgba(25,230,255,0.4)] hover:opacity-95 transition-all flex items-center justify-between active:scale-[0.98]"
                 >
                   <span>Connect Wallet to Trade</span>
                   <div className="w-8 h-8 rounded-full bg-black/15 flex items-center justify-center group-hover:translate-x-0.5 transition-transform">
@@ -445,10 +445,10 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
               <div className="doppelrand-core p-5 space-y-4">
                 <div className="flex items-center justify-between border-b border-arcum-border pb-3">
                   <div className="flex items-center gap-2 text-white font-bold text-sm font-heading">
-                    <span className="w-2 h-2 rounded-full bg-arcum-gold shadow-gold-bloom" />
+                    <span className="w-2 h-2 rounded-full bg-arcum-gold shadow-[0_0_12px_rgba(25,230,255,0.4)]" />
                     What-If PnL Simulator
                   </div>
-                  <span className="text-[10px] text-arcum-goldMuted font-mono px-2 py-0.5 rounded-full bg-white/[0.04]">
+                  <span className="text-[10px] text-arcum-muted font-mono px-2 py-0.5 rounded-full bg-white/[0.04]">
                     Simulates Norm Decay
                   </span>
                 </div>
@@ -467,7 +467,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
                   max="35"
                   value={targetMovePct}
                   onChange={(e) => setTargetMovePct(parseInt(e.target.value))}
-                  className="w-full accent-arcum-gold h-1.5 bg-arcum-card rounded-lg appearance-none cursor-pointer"
+                  className="w-full accent-arcum-cyan h-1.5 bg-arcum-card rounded-lg appearance-none cursor-pointer"
                 />
               </div>
 
@@ -483,7 +483,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
                   max="14"
                   value={scenarioDays}
                   onChange={(e) => setScenarioDays(parseInt(e.target.value))}
-                  className="w-full accent-arcum-gold h-1.5 bg-arcum-card rounded-lg appearance-none cursor-pointer"
+                  className="w-full accent-arcum-cyan h-1.5 bg-arcum-card rounded-lg appearance-none cursor-pointer"
                 />
               </div>
 
@@ -512,7 +512,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
                     <button
                       type="button"
                       onClick={() => { setTargetMovePct(3); setScenarioDays(7); }}
-                      className="px-2 py-1.5 rounded-lg bg-arcum-card border border-white/5 hover:border-arcum-gold/40 hover:bg-arcum-gold/10 text-arcum-gold text-center transition-all truncate"
+                      className="px-2 py-1.5 rounded-lg bg-arcum-card border border-white/5 hover:border-arcum-cyan/40 hover:bg-arcum-gold/10 text-arcum-cyan text-center transition-all truncate"
                       title="Steady Drift: +3% Move over 7 Days"
                     >
                       Drift (+3%)
@@ -559,7 +559,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
             </div>
             <button
               onClick={() => setActiveTab('trade')}
-              className="px-4 py-2 rounded-lg bg-arcum-gold text-arcum-dark font-semibold text-xs flex items-center gap-1"
+              className="px-4 py-2 rounded-lg bg-gradient-to-r from-arcum-cyan to-arcum-cobalt text-black font-semibold text-xs flex items-center gap-1"
             >
               Open New Position <ArrowUpRight className="w-4 h-4" />
             </button>
@@ -599,7 +599,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
                       </td>
                       <td className="px-5 py-4 text-white font-tabular font-medium">${pos.strike.toFixed(2)}</td>
                       <td className="px-5 py-4 text-white font-tabular">{pos.rawTokens.toFixed(2)}</td>
-                      <td className="px-5 py-4 font-tabular text-arcum-gold">
+                      <td className="px-5 py-4 font-tabular text-arcum-cyan">
                         {(pos.norm * 100).toFixed(1)}%
                         <div className="text-[10px] text-arcum-muted">Decay active</div>
                       </td>
@@ -629,7 +629,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
       {activeTab === 'shield' && (
         <div className="max-w-4xl mx-auto space-y-8">
           <div className="text-center space-y-2">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-arcum-gold/10 text-arcum-gold border border-arcum-gold/30 text-xs font-mono">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-arcum-cyan/10 text-arcum-cyan border border-arcum-cyan/25 text-xs font-mono">
               <Shield className="w-3.5 h-3.5" /> Automated Stock Token Downside Floor
             </div>
             <h2 className="text-2xl sm:text-3xl font-bold text-white">Shield Portfolio Protection</h2>
@@ -638,7 +638,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
             </p>
           </div>
 
-          <div className="bg-arcum-surface border border-arcum-border rounded-2xl p-8 space-y-6 gold-glow">
+          <div className="bg-arcum-surface border border-arcum-border rounded-2xl p-8 space-y-6 glow-cyan-subtle">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Asset Selector */}
               <div className="space-y-2">
@@ -649,7 +649,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
                     const st = stocks.find((s) => s.symbol === e.target.value);
                     if (st) onSelectStock(st);
                   }}
-                  className="w-full bg-arcum-card border border-arcum-border rounded-xl px-4 py-3 text-white text-sm font-mono focus:outline-none focus:border-arcum-gold"
+                  className="w-full bg-arcum-card border border-arcum-border rounded-xl px-4 py-3 text-white text-sm font-mono focus:outline-none focus:border-arcum-cyan"
                 >
                   {stocks.map((s) => (
                     <option key={s.symbol} value={s.symbol}>
@@ -664,7 +664,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
                 <label className="text-xs font-mono text-arcum-muted uppercase">Detected Wallet Holding</label>
                 <div className="bg-arcum-card border border-arcum-border rounded-xl px-4 py-3 text-white text-sm font-mono flex items-center justify-between">
                   <span>50.0 {selectedStock.symbol} Tokens</span>
-                  <span className="text-arcum-gold">Valued: ${(selectedStock.price * 50).toFixed(2)} USDG</span>
+                  <span className="text-arcum-cyan">Valued: ${(selectedStock.price * 50).toFixed(2)} USDG</span>
                 </div>
               </div>
             </div>
@@ -673,14 +673,14 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
             <div className="space-y-3 pt-4 border-t border-arcum-border">
               <div className="flex justify-between text-xs font-mono">
                 <span className="text-arcum-muted">Protection Strike Level</span>
-                <span className="text-arcum-gold font-bold">5% OTM Put ($ {(selectedStock.price * 0.95).toFixed(2)})</span>
+                <span className="text-arcum-cyan font-bold">5% OTM Put ($ {(selectedStock.price * 0.95).toFixed(2)})</span>
               </div>
               <input
                 type="range"
                 min="1"
                 max="20"
                 defaultValue="5"
-                className="w-full accent-arcum-gold h-2 bg-arcum-card rounded-lg appearance-none cursor-pointer"
+                className="w-full accent-arcum-cyan h-2 bg-arcum-card rounded-lg appearance-none cursor-pointer"
               />
               <div className="flex justify-between text-[11px] text-arcum-muted font-mono">
                 <span>Tight Protection (-2%)</span>
@@ -701,14 +701,14 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
               </div>
               <div className="flex justify-between">
                 <span className="text-arcum-muted">Est. Weekly Protection Premium:</span>
-                <span className="text-arcum-gold font-bold font-tabular">$142.50 USDG</span>
+                <span className="text-arcum-cyan font-bold font-tabular">$142.50 USDG</span>
               </div>
             </div>
 
             {/* Execute Shield */}
             <button
               onClick={() => alert(`Shield protection order executed on Robinhood Chain for ${selectedStock.symbol}.`)}
-              className="w-full py-4 rounded-xl bg-gradient-to-r from-arcum-gold to-arcum-goldMuted text-arcum-dark font-bold text-sm flex items-center justify-center gap-2 hover:opacity-95 shadow-md shadow-arcum-gold/15"
+              className="w-full py-4 rounded-xl bg-gradient-to-r from-arcum-cyan to-arcum-cobalt text-black font-bold text-sm flex items-center justify-center gap-2 hover:opacity-95 shadow-md shadow-arcum-gold/15"
             >
               <Shield className="w-5 h-5" /> Execute 1-Click Shield Protection
             </button>
@@ -721,7 +721,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
         <div className="space-y-8">
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
             <div>
-              <div className="text-xs font-mono text-arcum-gold uppercase tracking-wider">Liquidity Underwriting</div>
+              <div className="text-xs font-mono text-arcum-cyan uppercase tracking-wider">Liquidity Underwriting</div>
               <h2 className="text-2xl sm:text-3xl font-bold text-white">USDG Writer Pool</h2>
               <p className="text-xs text-arcum-muted">
                 Underwrite everlasting options, earn 80% protocol fee share + continuous holding funding. Capital entry and exit are governed by conservative liability bounds.
@@ -744,7 +744,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
             </div>
             <div className="bg-arcum-surface border border-arcum-border rounded-xl p-5 font-mono">
               <div className="text-xs text-arcum-muted uppercase">NAV Per Share</div>
-              <div className="text-2xl font-bold text-arcum-gold font-tabular mt-1">
+              <div className="text-2xl font-bold text-arcum-cyan font-tabular mt-1">
                 ${poolStats.navPerShare.toFixed(4)}
               </div>
               <div className="text-[11px] text-arcum-up mt-1">+10 bps entry premium</div>
@@ -802,7 +802,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
 
               <button
                 onClick={() => alert(`Deposited ${depositAmount} USDG to Writer Pool.`)}
-                className="w-full py-3.5 rounded-xl bg-arcum-gold text-arcum-dark font-bold text-sm hover:opacity-95 transition-all shadow-md"
+                className="w-full py-3.5 rounded-xl bg-gradient-to-r from-arcum-cyan to-arcum-cobalt text-black font-bold text-sm hover:opacity-95 transition-all shadow-md"
               >
                 Approve & Deposit USDG
               </button>
@@ -841,7 +841,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
 
               <button
                 onClick={() => alert(`Withdrawal notice created. Ticket matured in 72 hours.`)}
-                className="w-full py-3.5 rounded-xl bg-arcum-card border border-arcum-border hover:border-arcum-gold text-white font-bold text-sm transition-all"
+                className="w-full py-3.5 rounded-xl bg-arcum-card border border-arcum-border hover:border-arcum-cyan text-white font-bold text-sm transition-all"
               >
                 Create Withdrawal Ticket
               </button>
@@ -854,7 +854,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
       {activeTab === 'agents' && (
         <div className="max-w-4xl mx-auto space-y-8">
           <div className="text-center space-y-2">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-arcum-gold/10 text-arcum-gold border border-arcum-gold/30 text-xs font-mono">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-arcum-cyan/10 text-arcum-cyan border border-arcum-cyan/25 text-xs font-mono">
               <Bot className="w-3.5 h-3.5" /> Owner-Authorized On-Chain Delegation
             </div>
             <h2 className="text-2xl sm:text-3xl font-bold text-white">Agent Router & MCP Integration</h2>
@@ -881,7 +881,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
               </div>
               <div className="bg-arcum-card p-3 rounded-lg border border-arcum-border">
                 <div className="text-arcum-muted">Remaining Allowance</div>
-                <div className="text-base font-bold text-arcum-gold font-tabular mt-1">${agentPolicy.budgetUsdg - agentPolicy.spentUsdg} USDG</div>
+                <div className="text-base font-bold text-arcum-cyan font-tabular mt-1">${agentPolicy.budgetUsdg - agentPolicy.spentUsdg} USDG</div>
               </div>
               <div className="bg-arcum-card p-3 rounded-lg border border-arcum-border">
                 <div className="text-arcum-muted">Max Per Trade</div>
@@ -946,7 +946,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
               <span className="text-arcum-muted">Slippage Tolerance</span>
               <div className="flex gap-2">
                 {['0.5%', '1.0%', '2.0%'].map((slip) => (
-                  <button key={slip} className="px-3 py-1.5 rounded bg-arcum-card border border-arcum-border text-white hover:border-arcum-gold">
+                  <button key={slip} className="px-3 py-1.5 rounded bg-arcum-card border border-arcum-border text-white hover:border-arcum-cyan">
                     {slip}
                   </button>
                 ))}
@@ -964,11 +964,11 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
             <div className="space-y-3">
               <div className="flex justify-between items-center py-2 border-b border-arcum-border">
                 <span className="text-white">Bought 50.0 NVDA Up Options (Daily)</span>
-                <span className="text-arcum-gold">Block #18,942,109</span>
+                <span className="text-arcum-cyan">Block #18,942,109</span>
               </div>
               <div className="flex justify-between items-center py-2 border-b border-arcum-border">
                 <span className="text-white">Deposited 5,000 USDG to Writer Pool</span>
-                <span className="text-arcum-gold">Block #18,935,441</span>
+                <span className="text-arcum-cyan">Block #18,935,441</span>
               </div>
             </div>
           </div>
@@ -978,7 +978,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
       {/* Buy Modal */}
       {showBuyModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-          <div className="bg-arcum-surface border border-arcum-border rounded-2xl max-w-md w-full p-6 space-y-6 gold-glow animate-in fade-in zoom-in-95">
+          <div className="bg-arcum-surface border border-arcum-border rounded-2xl max-w-md w-full p-6 space-y-6 glow-cyan-subtle animate-in fade-in zoom-in-95">
             <div className="flex items-center justify-between border-b border-arcum-border pb-3">
               <h3 className="font-bold text-lg text-white">Confirm Option Order</h3>
               <button
@@ -1008,7 +1008,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
               </div>
               <div className="flex justify-between text-sm font-bold pt-2 border-t border-arcum-border">
                 <span className="text-white">Total USDG:</span>
-                <span className="text-arcum-gold">${currentQuote.totalCostUsdg.toFixed(2)} USDG</span>
+                <span className="text-arcum-cyan">${currentQuote.totalCostUsdg.toFixed(2)} USDG</span>
               </div>
             </div>
 
@@ -1016,14 +1016,14 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
             {buyStep === 'idle' && (
               <button
                 onClick={handleExecuteBuy}
-                className="w-full py-3.5 rounded-xl bg-gradient-to-r from-arcum-gold to-arcum-goldMuted text-arcum-dark font-bold text-sm hover:opacity-95 transition-all"
+                className="w-full py-3.5 rounded-xl bg-gradient-to-r from-arcum-cyan to-arcum-cobalt text-black font-bold text-sm hover:opacity-95 transition-all"
               >
                 Approve USDG & Execute Buy
               </button>
             )}
 
             {buyStep === 'approving' && (
-              <div className="flex items-center justify-center gap-2 py-3.5 text-xs font-mono text-arcum-gold">
+              <div className="flex items-center justify-center gap-2 py-3.5 text-xs font-mono text-arcum-cyan">
                 <RefreshCw className="w-4 h-4 animate-spin" /> Step 1/2: Approving exact USDG allowance...
               </div>
             )}
@@ -1035,7 +1035,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
             )}
 
             {buyStep === 'buying' && (
-              <div className="flex items-center justify-center gap-2 py-3.5 text-xs font-mono text-arcum-gold">
+              <div className="flex items-center justify-center gap-2 py-3.5 text-xs font-mono text-arcum-cyan">
                 <RefreshCw className="w-4 h-4 animate-spin" /> Step 2/2: Confirming transaction on Robinhood Chain...
               </div>
             )}

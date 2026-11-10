@@ -1,5 +1,5 @@
 import React from 'react';
-import { Shield, ExternalLink, Terminal, BookOpen, FileText, Lock } from 'lucide-react';
+import { ExternalLink, ShieldCheck } from 'lucide-react';
 import { CONTRACT_ADDRESSES, CHAIN_CONFIG } from '../data/protocol';
 
 interface FooterProps {
@@ -8,70 +8,84 @@ interface FooterProps {
 
 export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
   return (
-    <footer className="bg-arcum-surface/90 border-t border-arcum-border text-arcum-muted text-xs mt-20">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
+    <footer className="border-t border-white/[0.08] bg-arcum-bg text-arcum-muted text-xs mt-24">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-14">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-10 mb-12">
           {/* Brand Info */}
-          <div>
-            <div className="flex items-center gap-2 mb-3">
-              <div className="w-6 h-6 rounded bg-gradient-to-br from-arcum-gold to-arcum-goldMuted flex items-center justify-center text-arcum-dark font-bold font-mono text-xs">
-                A
+          <div className="space-y-3">
+            <div className="flex items-center gap-2.5">
+              <div className="w-7 h-7 rounded-lg bg-gradient-to-tr from-arcum-cyan via-arcum-cobalt to-arcum-violet p-[1.5px] shadow-[0_0_12px_rgba(25,230,255,0.3)]">
+                <div className="w-full h-full bg-arcum-bg rounded-[6px] flex items-center justify-center font-display font-black text-arcum-cyan text-xs">
+                  A
+                </div>
               </div>
-              <span className="font-bold text-base text-white tracking-tight">ARCUM</span>
+              <span className="font-display font-bold text-base text-white tracking-tight">ARCUM</span>
+              <span className="text-[10px] font-mono text-arcum-cyan px-1.5 py-0.5 rounded bg-arcum-cyan/10 border border-arcum-cyan/25">
+                4663
+              </span>
             </div>
-            <p className="text-arcum-muted leading-relaxed mb-4">
-              Everlasting options protocol for Robinhood Chain Stock Tokens settled in USDG. Continuous funding, no expiry dates, and institutional Writer Pool liquidity.
+            <p className="text-arcum-muted leading-relaxed text-xs">
+              Everlasting options protocol for tokenized US equities on Robinhood Chain. Continuous funding decay, zero expiration dates, and USDG settlement.
             </p>
-            <div className="flex items-center gap-2 text-[11px] text-arcum-goldMuted font-mono">
-              <span className="w-1.5 h-1.5 rounded-full bg-arcum-up" />
-              Target Network: Robinhood Chain (ID 4663)
+            <div className="flex items-center gap-2 text-[11px] font-mono text-arcum-muted pt-1">
+              <span className="w-1.5 h-1.5 rounded-full bg-arcum-cyan" />
+              Robinhood Chain Mainnet • Chain 4663
             </div>
           </div>
 
           {/* Protocol Links */}
-          <div>
-            <h4 className="text-white font-semibold mb-3 uppercase tracking-wider text-[11px]">Protocol</h4>
-            <ul className="space-y-2">
+          <div className="space-y-3">
+            <div className="text-white font-mono text-xs font-semibold uppercase tracking-wider">
+              Protocol
+            </div>
+            <ul className="space-y-2 font-mono text-xs">
               <li>
-                <button onClick={() => onNavigate('dashboard')} className="hover:text-arcum-gold transition-colors">
-                  Trading Dashboard
+                <button onClick={() => onNavigate('dashboard')} className="hover:text-arcum-cyan transition-colors">
+                  Swap (Trading Terminal)
                 </button>
               </li>
               <li>
-                <button onClick={() => onNavigate('products')} className="hover:text-arcum-gold transition-colors">
-                  Products & Shield
+                <button onClick={() => onNavigate('markets')} className="hover:text-arcum-cyan transition-colors">
+                  Pools (Strikes & Chains)
                 </button>
               </li>
               <li>
-                <button onClick={() => onNavigate('markets')} className="hover:text-arcum-gold transition-colors">
-                  Markets & Chains
+                <button onClick={() => onNavigate('products')} className="hover:text-arcum-cyan transition-colors">
+                  Shield Protection
                 </button>
               </li>
               <li>
-                <button onClick={() => onNavigate('writers')} className="hover:text-arcum-gold transition-colors">
+                <button onClick={() => onNavigate('writers')} className="hover:text-arcum-cyan transition-colors">
                   Writer Pool Yield
                 </button>
               </li>
               <li>
-                <button onClick={() => onNavigate('costs')} className="hover:text-arcum-gold transition-colors">
-                  Fee Structure (3 bps)
+                <button onClick={() => onNavigate('protocol')} className="hover:text-arcum-cyan transition-colors">
+                  Protocol Analytics
                 </button>
               </li>
             </ul>
           </div>
 
-          {/* Developers & Architecture */}
-          <div>
-            <h4 className="text-white font-semibold mb-3 uppercase tracking-wider text-[11px]">Developers & Verification</h4>
-            <ul className="space-y-2">
+          {/* Developers & Verification */}
+          <div className="space-y-3">
+            <div className="text-white font-mono text-xs font-semibold uppercase tracking-wider">
+              Developers & Security
+            </div>
+            <ul className="space-y-2 font-mono text-xs">
               <li>
-                <button onClick={() => onNavigate('contracts')} className="hover:text-arcum-gold transition-colors flex items-center gap-1">
+                <button onClick={() => onNavigate('contracts')} className="hover:text-arcum-cyan transition-colors flex items-center gap-1.5">
                   Verified Contracts <ExternalLink className="w-3 h-3 text-arcum-muted" />
                 </button>
               </li>
               <li>
-                <button onClick={() => onNavigate('learn')} className="hover:text-arcum-gold transition-colors flex items-center gap-1">
-                  Learning Center <BookOpen className="w-3 h-3 text-arcum-muted" />
+                <button onClick={() => onNavigate('docs')} className="hover:text-arcum-cyan transition-colors">
+                  Interactive Docs Portal
+                </button>
+              </li>
+              <li>
+                <button onClick={() => onNavigate('learn')} className="hover:text-arcum-cyan transition-colors">
+                  Euler-Cauchy ODE Sandbox
                 </button>
               </li>
               <li>
@@ -79,53 +93,48 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
                   href={CHAIN_CONFIG.blockExplorer}
                   target="_blank"
                   rel="noreferrer"
-                  className="hover:text-arcum-gold transition-colors flex items-center gap-1"
+                  className="hover:text-arcum-cyan transition-colors flex items-center gap-1.5 text-arcum-muted"
                 >
-                  Blockscout Explorer <ExternalLink className="w-3 h-3 text-arcum-muted" />
+                  Blockscout Explorer <ExternalLink className="w-3 h-3" />
                 </a>
               </li>
               <li>
-                <button onClick={() => onNavigate('exit')} className="text-amber-400 hover:text-amber-300 font-medium transition-colors flex items-center gap-1">
-                  Emergency Exit Guide <Shield className="w-3 h-3" />
+                <button onClick={() => onNavigate('exit')} className="text-arcum-cyan hover:underline transition-colors flex items-center gap-1.5">
+                  Emergency Exit Guide
                 </button>
               </li>
             </ul>
           </div>
 
-          {/* Legal & Security */}
-          <div>
-            <h4 className="text-white font-semibold mb-3 uppercase tracking-wider text-[11px]">Security & Legal</h4>
-            <ul className="space-y-2">
-              <li className="flex items-center gap-1.5 text-arcum-muted">
-                <Lock className="w-3.5 h-3.5 text-arcum-gold" />
-                48-Hour Admin Timelock
-              </li>
-              <li>
-                <button onClick={() => onNavigate('privacy')} className="hover:text-arcum-gold transition-colors">
-                  Privacy Policy
-                </button>
-              </li>
-              <li>
-                <button onClick={() => onNavigate('terms')} className="hover:text-arcum-gold transition-colors">
-                  Product Terms
-                </button>
-              </li>
-              <li className="text-[11px] text-arcum-muted pt-2">
-                Settled exclusively in USDG. Everlasting holding cost continuously decays effective units.
-              </li>
-            </ul>
+          {/* Security & Governance */}
+          <div className="space-y-3">
+            <div className="text-white font-mono text-xs font-semibold uppercase tracking-wider">
+              Governance & Safety
+            </div>
+            <div className="space-y-2 text-xs text-arcum-muted">
+              <div className="p-3 rounded-lg bg-arcum-bgElevated border border-white/5 space-y-1">
+                <div className="flex items-center gap-1.5 text-white font-mono font-medium text-[11px]">
+                  <ShieldCheck className="w-3.5 h-3.5 text-arcum-cyan" />
+                  48-Hour Admin Timelock
+                </div>
+                <p className="text-[11px] text-arcum-muted">
+                  No instant upgrades. All parameter updates enforce a 48h timelock notice.
+                </p>
+              </div>
+              <p className="text-[11px] text-arcum-muted leading-relaxed">
+                Settled exclusively in USDG. Zero margin calls or liquidations on option buyer positions.
+              </p>
+            </div>
           </div>
         </div>
 
-        {/* Bottom Bar */}
-        <div className="pt-8 border-t border-arcum-border flex flex-col sm:flex-row items-center justify-between gap-4 text-arcum-muted text-[11px]">
+        <div className="pt-8 border-t border-white/[0.08] flex flex-col sm:flex-row items-center justify-between gap-4 font-mono text-[11px]">
           <div>
-            © 2026 Arcum Protocol. Built on Robinhood Chain mainnet. Pinned upstream commit: <span className="font-mono text-arcum-goldMuted">1d434a3a</span> under MIT License.
+            © 2026 Arcum Protocol • Deployed on Robinhood Chain Mainnet (Chain ID 4663)
           </div>
-          <div className="flex items-center gap-4">
-            <span>Settlement: USDG (0x5fc5...d168)</span>
-            <span>•</span>
-            <span>Cancun EVM</span>
+          <div className="flex items-center gap-6">
+            <span className="text-arcum-muted">Cancun EVM Solc 0.8.28</span>
+            <span className="text-arcum-cyan font-semibold">Sourcify Verified Exact Match</span>
           </div>
         </div>
       </div>

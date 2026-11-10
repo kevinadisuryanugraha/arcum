@@ -83,7 +83,7 @@ export const DocsPage: React.FC = () => {
             onClick={() => setSelectedNetwork('testnet')}
             className={`px-3 py-1.5 rounded-lg text-xs font-mono font-medium transition-all ${
               selectedNetwork === 'testnet'
-                ? 'bg-arcum-gold/20 text-arcum-gold border border-arcum-gold/40 shadow-sm'
+                ? 'bg-arcum-cyan/20 text-arcum-cyan border border-arcum-cyan/40 shadow-sm'
                 : 'text-arcum-muted hover:text-white'
             }`}
           >
@@ -188,7 +188,7 @@ export const DocsPage: React.FC = () => {
               </div>
               <div className="p-4 rounded-xl bg-arcum-card/60 border border-white/5">
                 <span className="text-xs font-mono text-arcum-muted">Protocol Base Fee</span>
-                <p className="text-lg font-bold text-arcum-gold mt-1">3 bps (0.03%)</p>
+                <p className="text-lg font-bold text-emerald-400 mt-1">3 bps (0.03%)</p>
                 <span className="text-[11px] text-arcum-muted">Lowest options fee in Web3</span>
               </div>
             </div>
@@ -380,7 +380,7 @@ export const DocsPage: React.FC = () => {
 
           {/* Section 9: The Prospectus */}
           <section id="prospectus" className="prospectus-card rounded-2xl p-6 sm:p-8 space-y-4">
-            <div className="flex items-center gap-2 text-arcum-gold text-xs font-mono font-semibold uppercase tracking-wider">
+            <div className="flex items-center gap-2 text-arcum-cyan text-xs font-mono font-semibold uppercase tracking-wider">
               <FileText className="w-4 h-4" /> Section 9
             </div>
             <h2 className="text-2xl font-bold text-white">The Prospectus: Institutional Disclosures & Risk Matrix</h2>
@@ -393,7 +393,7 @@ export const DocsPage: React.FC = () => {
               <p>3. <strong>Smart Contract Risk:</strong> While audited and verified with stateful invariant fuzzing, smart contract execution carries inherent blockchain risk.</p>
             </div>
             <div className="pt-2">
-              <span className="stamp-badge px-3 py-1 rounded bg-arcum-gold/10 text-arcum-gold border border-arcum-gold/30">
+              <span className="stamp-badge px-3 py-1 rounded bg-arcum-cyan/10 text-arcum-cyan border border-arcum-cyan/30">
                 Official Robinhood Chain Protocol Prospectus • Verifiable on Sourcify
               </span>
             </div>
