@@ -2,15 +2,50 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --prism: linear-gradient(115deg, #80A800 0%, #19E6FF 36%, #2B4BFF 70%, #8B3CFF 100%);
+  --glow-cyan: 0 0 0 1px rgba(25, 230, 255, 0.35), 0 0 36px -6px rgba(25, 230, 255, 0.45);
+}
+
 @layer base {
   body {
-    @apply bg-arcum-bg text-arcum-text antialiased selection:bg-arcum-gold/25 selection:text-arcum-gold;
+    @apply bg-arcum-bg text-arcum-text antialiased selection:bg-arcum-cyan/25 selection:text-arcum-cyan font-sans;
     font-feature-settings: "cv02", "cv03", "cv04", "cv11", "ss01", "ss02";
   }
 
   .font-tabular {
     font-variant-numeric: tabular-nums;
   }
+}
+
+/* Prism text & ring from asterrapools.tech */
+.text-prism {
+  background: var(--prism);
+  color: transparent;
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+.prism-ring {
+  position: relative;
+}
+
+.prism-ring:before {
+  content: "";
+  border-radius: inherit;
+  background: var(--prism);
+  pointer-events: none;
+  padding: 1px;
+  position: absolute;
+  inset: 0;
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+}
+
+.animate-prism-pan {
+  animation: 6s linear infinite prismPan;
 }
 
 /* Subtle architectural grid background with spotlight vignette */

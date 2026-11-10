@@ -8,13 +8,14 @@ export default {
     extend: {
       colors: {
         arcum: {
-          bg: "#050814",
-          surface: "#0A1028",
-          card: "#0F183C",
-          cardInner: "#0A122E",
-          border: "rgba(255, 255, 255, 0.07)",
+          bg: "#070A14",
+          bgElevated: "#0B1020",
+          surface: "#0E1428",
+          card: "#121A36",
+          cardInner: "#0E1630",
+          border: "rgba(255, 255, 255, 0.08)",
           borderLight: "rgba(255, 255, 255, 0.14)",
-          borderGlow: "rgba(212, 175, 55, 0.35)",
+          borderGlow: "rgba(25, 230, 255, 0.35)",
           gold: "#D4AF37",
           goldLight: "#FDE68A",
           goldMuted: "#C5A880",
@@ -26,16 +27,19 @@ export default {
           text: "#F8FAFC",
           muted: "#94A3B8",
           dark: "#03050B",
-          cyan: "#19e6ff",
+          cyan: "#19E6FF",
+          cobalt: "#2B4BFF",
+          violet: "#8B3CFF",
+          lime: "#80A800",
           cyanGlow: "rgba(25, 230, 255, 0.35)",
         }
       },
       fontFamily: {
-        sans: ['Plus Jakarta Sans', 'system-ui', '-apple-system', 'sans-serif'],
-        heading: ['Space Grotesk', 'Plus Jakarta Sans', 'sans-serif'],
-        brand: ['Cinzel', 'serif'],
-        display: ['Unbounded', 'Space Grotesk', 'sans-serif'],
-        mono: ['JetBrains Mono', 'Fira Code', 'Courier New', 'monospace'],
+        display: ['Unbounded', 'system-ui', 'sans-serif'],
+        sans: ['Geist', 'Plus Jakarta Sans', 'system-ui', '-apple-system', 'sans-serif'],
+        heading: ['Unbounded', 'Space Grotesk', 'sans-serif'],
+        brand: ['Unbounded', 'Cinzel', 'serif'],
+        mono: ['Geist Mono', 'JetBrains Mono', 'Fira Code', 'Courier New', 'monospace'],
       },
       boxShadow: {
         'bezel-outer': '0 0 0 1px rgba(255, 255, 255, 0.08), 0 20px 40px -15px rgba(0, 0, 0, 0.7)',
@@ -49,8 +53,13 @@ export default {
         'shimmer': 'shimmer 2.5s infinite linear',
         'pulse-subtle': 'pulseSubtle 4s infinite ease-in-out',
         'float': 'float 6s ease-in-out infinite',
+        'prism-pan': 'prismPan 6s linear infinite',
       },
       keyframes: {
+        prismPan: {
+          '0%': { backgroundPosition: '0% 50%' },
+          '100%': { backgroundPosition: '200% 50%' },
+        },
         shimmer: {
           '0%': { transform: 'translateX(-100%)' },
           '100%': { transform: 'translateX(100%)' },

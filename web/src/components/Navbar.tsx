@@ -1,5 +1,5 @@
-import React from 'react';
-import { Shield, Wallet, ArrowUpRight, ChevronDown, CheckCircle2 } from 'lucide-react';
+import React, { useState } from 'react';
+import { Shield, Wallet, ExternalLink, ChevronDown } from 'lucide-react';
 import { SessionKind } from '../types';
 
 interface NavbarProps {
@@ -17,140 +17,111 @@ export const Navbar: React.FC<NavbarProps> = ({
   onConnectWallet,
   session,
 }) => {
-  const getSessionBadge = () => {
-    switch (session) {
-      case 'REGULAR':
-        return (
-          <span className="flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-mono font-medium bg-arcum-up/10 text-arcum-up border border-arcum-up/30 shadow-up-bloom/20">
-            <span className="w-1.5 h-1.5 rounded-full bg-arcum-up animate-pulse" />
-            NYSE Regular
-          </span>
-        );
-      case 'EXTENDED':
-        return (
-          <span className="flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-mono font-medium bg-amber-500/10 text-amber-400 border border-amber-500/30">
-            <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
-            Extended
-          </span>
-        );
-      case 'CLOSED':
-        return (
-          <span className="flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-mono font-medium bg-white/5 text-arcum-muted border border-white/10">
-            <span className="w-1.5 h-1.5 rounded-full bg-arcum-muted" />
-            Closed (Decay Active)
-          </span>
-        );
-      case 'HALTED':
-        return (
-          <span className="flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-mono font-medium bg-arcum-down/10 text-arcum-down border border-arcum-down/30">
-            <span className="w-1.5 h-1.5 rounded-full bg-arcum-down animate-ping" />
-            Market Halted
-          </span>
-        );
-    }
-  };
+  const [networkMode, setNetworkMode] = useState<'mainnet' | 'testnet'>('mainnet');
 
   const navLinks = [
-    { id: 'dashboard', label: 'Dashboard' },
+    { id: 'dashboard', label: 'Swap' },
+    { id: 'markets', label: 'Pools' },
+    { id: 'positions', label: 'Positions' },
+    { id: 'products', label: 'Shield' },
+    { id: 'writers', label: 'Writer Pool' },
+    { id: 'protocol', label: 'Analytics' },
     { id: 'docs', label: 'Docs' },
-    { id: 'products', label: 'Products' },
-    { id: 'markets', label: 'Markets' },
-    { id: 'protocol', label: 'Protocol' },
-    { id: 'costs', label: 'Costs' },
-    { id: 'writers', label: 'Writers' },
-    { id: 'learn', label: 'Learn' },
     { id: 'contracts', label: 'Contracts' },
   ];
 
   return (
-    <div className="sticky top-3 z-50 px-4 sm:px-6 max-w-7xl mx-auto w-full transition-all">
-      <header className="glass-island rounded-2xl px-4 sm:px-6 py-2.5 flex items-center justify-between border border-white/10">
+    <header className="sticky top-0 z-40 w-full border-b border-white/[0.08] bg-arcum-bg/90 backdrop-blur-md">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between gap-4">
         {/* Brand Group */}
-        <div className="flex items-center gap-8">
+        <div className="flex items-center gap-7">
           <button
             onClick={() => onNavigate('home')}
-            className="flex items-center gap-3 text-left group transition-transform active:scale-[0.98]"
+            className="group flex items-center gap-2.5 text-left transition-opacity hover:opacity-90"
+            aria-label="Arcum home"
           >
-            {/* Double-bezel hardware emblem */}
-            <div className="w-9 h-9 rounded-xl p-0.5 bg-gradient-to-b from-arcum-gold to-arcum-goldDark/30 ring-1 ring-arcum-gold/40 shadow-gold-bloom/30 flex items-center justify-center">
-              <div className="w-full h-full rounded-[9px] bg-arcum-dark flex items-center justify-center text-arcum-gold font-bold text-base font-brand">
+            {/* Asterra-style Rotating Mark */}
+            <div className="w-7 h-7 rounded-lg bg-gradient-to-tr from-arcum-cyan via-arcum-cobalt to-arcum-violet p-[1.5px] transition-transform duration-500 ease-out group-hover:rotate-90 shadow-[0_0_16px_rgba(25,230,255,0.4)]">
+              <div className="w-full h-full bg-arcum-bg rounded-[6px] flex items-center justify-center font-display font-black text-arcum-cyan text-xs">
                 A
               </div>
             </div>
-            <div>
-              <div className="flex items-center gap-1.5">
-                <span className="font-bold text-lg tracking-wider text-white font-brand group-hover:text-arcum-gold transition-colors">
-                  ARCUM
-                </span>
-                <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-white/[0.05] border border-white/10 text-arcum-gold font-mono font-medium">
-                  4663
-                </span>
-              </div>
-              <p className="text-[9px] text-arcum-muted font-mono tracking-widest uppercase">Everlasting Options</p>
+            <div className="flex items-center gap-1.5">
+              <span className="font-display font-semibold text-white tracking-tight text-sm">
+                Arcum
+              </span>
+              <span className="text-[10px] font-mono text-arcum-cyan px-1.5 py-0.5 rounded bg-arcum-cyan/10 border border-arcum-cyan/30">
+                4663
+              </span>
             </div>
           </button>
 
-          {/* Navigation Links with Hover Spotlight */}
-          <nav className="hidden md:flex items-center gap-1">
-            {navLinks.map((link) => (
-              <button
-                key={link.id}
-                onClick={() => onNavigate(link.id)}
-                className={`relative px-3.5 py-1.5 rounded-xl text-xs font-medium tracking-wide transition-all ${
-                  currentRoute === link.id
-                    ? 'text-white bg-white/[0.08] shadow-inner font-semibold'
-                    : 'text-arcum-muted hover:text-white hover:bg-white/[0.04]'
-                }`}
-              >
-                {link.label}
-                {currentRoute === link.id && (
-                  <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-4 h-0.5 rounded-full bg-arcum-gold shadow-gold-bloom" />
-                )}
-              </button>
-            ))}
+          {/* Desktop Navigation Links (exact AsterraPools styling) */}
+          <nav className="hidden lg:flex items-center gap-1">
+            {navLinks.map((link) => {
+              const isActive =
+                currentRoute === link.id ||
+                (link.id === 'dashboard' && currentRoute === 'dashboard') ||
+                (link.id === 'positions' && currentRoute === 'dashboard');
+              return (
+                <button
+                  key={link.id}
+                  onClick={() => onNavigate(link.id === 'positions' ? 'dashboard' : link.id)}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                    isActive
+                      ? 'text-white bg-white/[0.08] shadow-sm'
+                      : 'text-arcum-muted hover:text-white hover:bg-white/[0.04]'
+                  }`}
+                >
+                  {link.label}
+                </button>
+              );
+            })}
           </nav>
         </div>
 
-        {/* Right Action Bar */}
+        {/* Right Status & Actions */}
         <div className="flex items-center gap-3">
-          {/* Market Session Pill */}
-          <div className="hidden sm:block">
-            {getSessionBadge()}
+          {/* Network Switcher: Testnet / Mainnet */}
+          <div className="hidden sm:flex items-center p-0.5 rounded-lg bg-arcum-surface border border-white/[0.08] text-[11px] font-mono">
+            <button
+              onClick={() => setNetworkMode('testnet')}
+              className={`px-2 py-1 rounded-md transition-all ${
+                networkMode === 'testnet'
+                  ? 'bg-white/10 text-white font-medium'
+                  : 'text-arcum-muted hover:text-white'
+              }`}
+            >
+              Testnet
+            </button>
+            <button
+              onClick={() => setNetworkMode('mainnet')}
+              className={`px-2 py-1 rounded-md transition-all ${
+                networkMode === 'mainnet'
+                  ? 'bg-arcum-cyan/20 text-arcum-cyan font-semibold border border-arcum-cyan/30'
+                  : 'text-arcum-muted hover:text-white'
+              }`}
+            >
+              Mainnet
+            </button>
           </div>
 
-          {/* Network Badge */}
-          <div className="hidden lg:flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-mono bg-white/[0.04] border border-white/[0.08] text-arcum-muted">
-            <span className="w-1.5 h-1.5 rounded-full bg-arcum-gold" />
-            Robinhood Chain
+          {/* Robinhood Chain Status */}
+          <div className="hidden md:flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-white/10 bg-arcum-surface/80 text-[11px] font-mono text-arcum-muted">
+            <span className="w-1.5 h-1.5 rounded-full bg-arcum-cyan animate-pulse" />
+            <span>Robinhood Chain</span>
           </div>
 
-          {/* Button-in-Button Wallet Pill */}
+          {/* Connect / Wallet Button */}
           <button
             onClick={onConnectWallet}
-            className={`group pl-3.5 pr-1.5 py-1.5 rounded-full text-xs font-medium transition-all flex items-center gap-2.5 active:scale-[0.98] ${
-              walletConnected
-                ? 'bg-white/[0.06] border border-arcum-gold/40 text-arcum-gold hover:border-arcum-gold'
-                : 'bg-gradient-to-r from-arcum-gold to-arcum-goldMuted text-arcum-dark font-bold shadow-gold-bloom'
-            }`}
+            className="flex items-center gap-2 px-3.5 py-1.5 rounded-lg bg-gradient-to-r from-arcum-cyan to-arcum-cobalt text-black font-semibold text-xs hover:opacity-95 transition-all shadow-[0_0_20px_rgba(25,230,255,0.3)] active:scale-95"
           >
-            {walletConnected ? (
-              <>
-                <span className="font-mono text-[11px]">0x71C8...a49B</span>
-                <span className="text-[10px] px-2 py-0.5 rounded-full bg-arcum-gold/15 text-arcum-gold font-mono font-bold">
-                  5,000 USDG
-                </span>
-              </>
-            ) : (
-              <>
-                <span>Connect Wallet</span>
-                <div className="w-6 h-6 rounded-full bg-arcum-dark/20 flex items-center justify-center text-arcum-dark group-hover:translate-x-0.5 transition-transform">
-                  <ArrowUpRight className="w-3.5 h-3.5" />
-                </div>
-              </>
-            )}
+            <Wallet className="w-3.5 h-3.5" />
+            <span>{walletConnected ? '0x71C8...a49B' : 'Connect'}</span>
           </button>
         </div>
-      </header>
-    </div>
+      </div>
+    </header>
   );
 };
