@@ -26,18 +26,22 @@ export default {
           text: "#F8FAFC",
           muted: "#94A3B8",
           dark: "#03050B",
+          cyan: "#19e6ff",
+          cyanGlow: "rgba(25, 230, 255, 0.35)",
         }
       },
       fontFamily: {
         sans: ['Plus Jakarta Sans', 'system-ui', '-apple-system', 'sans-serif'],
         heading: ['Space Grotesk', 'Plus Jakarta Sans', 'sans-serif'],
         brand: ['Cinzel', 'serif'],
+        display: ['Unbounded', 'Space Grotesk', 'sans-serif'],
         mono: ['JetBrains Mono', 'Fira Code', 'Courier New', 'monospace'],
       },
       boxShadow: {
         'bezel-outer': '0 0 0 1px rgba(255, 255, 255, 0.08), 0 20px 40px -15px rgba(0, 0, 0, 0.7)',
         'bezel-inner': 'inset 0 1px 1px 0 rgba(255, 255, 255, 0.12), inset 0 -1px 1px 0 rgba(0, 0, 0, 0.5)',
         'gold-bloom': '0 0 30px -5px rgba(212, 175, 55, 0.25)',
+        'cyan-glow': '0 0 0 1px rgba(25, 230, 255, 0.3), 0 0 36px -6px rgba(25, 230, 255, 0.35)',
         'up-bloom': '0 0 25px -5px rgba(16, 185, 129, 0.3)',
         'down-bloom': '0 0 25px -5px rgba(244, 63, 94, 0.3)',
       },

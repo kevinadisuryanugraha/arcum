@@ -7,6 +7,7 @@ import { DashboardPage } from './pages/DashboardPage';
 import { ProductsPage } from './pages/ProductsPage';
 import { LearnPage } from './pages/LearnPage';
 import { ContractsPage } from './pages/ContractsPage';
+import { DocsPage } from './pages/DocsPage';
 import { ExitPage } from './pages/ExitPage';
 import { INITIAL_STOCKS } from './data/protocol';
 import { StockInfo, SessionKind } from './types';
@@ -65,6 +66,8 @@ export function App() {
         )}
 
         {currentRoute === 'learn' && <LearnPage />}
+
+        {currentRoute === 'docs' && <DocsPage />}
 
         {currentRoute === 'contracts' && <ContractsPage />}
 

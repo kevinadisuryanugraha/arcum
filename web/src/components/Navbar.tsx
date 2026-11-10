@@ -52,6 +52,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 
   const navLinks = [
     { id: 'dashboard', label: 'Dashboard' },
+    { id: 'docs', label: 'Docs' },
     { id: 'products', label: 'Products' },
     { id: 'markets', label: 'Markets' },
     { id: 'protocol', label: 'Protocol' },

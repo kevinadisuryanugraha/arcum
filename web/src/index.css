@@ -39,6 +39,31 @@
   @apply bg-arcum-bg/80 backdrop-blur-2xl border border-white/[0.08] shadow-[0_8px_32px_0_rgba(0,0,0,0.6)];
 }
 
+/* Institutional Prospectus Card (from surplus.codes) */
+.prospectus-card {
+  background: rgba(10, 16, 40, 0.65);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 4px 24px -1px rgba(0, 0, 0, 0.5);
+}
+
+/* Electric Cyan Glow (from asterrapools.tech) */
+.glow-cyan {
+  box-shadow: 0 0 0 1px rgba(25, 230, 255, 0.3), 0 0 36px -6px rgba(25, 230, 255, 0.35);
+}
+
+.glow-cyan-subtle {
+  box-shadow: 0 0 0 1px rgba(25, 230, 255, 0.15), 0 0 20px -5px rgba(25, 230, 255, 0.2);
+}
+
+/* Stamp Verification Badge */
+.stamp-badge {
+  font-family: 'JetBrains Mono', monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.7rem;
+}
+
 /* Shimmer Sheen */
 .shimmer-mask {
   mask-image: linear-gradient(60deg, black 25%, rgba(0, 0, 0, 0.2) 50%, black 75%);

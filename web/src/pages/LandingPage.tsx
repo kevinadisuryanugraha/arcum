@@ -1,5 +1,5 @@
 import React from 'react';
-import { ArrowRight, Shield, Zap, TrendingUp, DollarSign, Lock, AlertTriangle, ChevronRight, BarChart3, CheckCircle2 } from 'lucide-react';
+import { ArrowRight, Shield, Zap, TrendingUp, DollarSign, Lock, AlertTriangle, ChevronRight, BarChart3, CheckCircle2, FileText, Sparkles } from 'lucide-react';
 import { StockInfo } from '../types';
 
 interface LandingPageProps {
@@ -48,8 +48,14 @@ export const LandingPage: React.FC<LandingPageProps> = ({
             Launch Trading App <ArrowRight className="w-5 h-5" />
           </button>
           <button
+            onClick={() => onNavigate('docs')}
+            className="w-full sm:w-auto px-7 py-3.5 rounded-xl bg-arcum-surface border border-arcum-cyan/30 hover:border-arcum-cyan text-white font-medium text-base transition-all flex items-center justify-center gap-2 glow-cyan-subtle"
+          >
+            Read Docs & Prospectus <FileText className="w-4 h-4 text-arcum-cyan" />
+          </button>
+          <button
             onClick={() => onNavigate('products')}
-            className="w-full sm:w-auto px-7 py-3.5 rounded-xl bg-arcum-surface border border-arcum-border hover:border-arcum-gold/40 text-white font-medium text-base transition-all"
+            className="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-arcum-card border border-arcum-border hover:border-arcum-gold/40 text-arcum-muted hover:text-white font-medium text-base transition-all"
           >
             Explore Mechanisms
           </button>

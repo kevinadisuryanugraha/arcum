@@ -207,11 +207,38 @@ contract ArcumEngine is IOptionEngine, Ownable, ReentrancyGuard {
     }
 
     function totalLiability() external view override returns (uint256 liabilityWad) {
-        return 0;
+        uint256 count = REGISTRY.seriesCount();
+        uint256 total = 0;
+        for (uint256 i = 0; i < count; i++) {
+            bytes32 sId = REGISTRY.seriesIdAt(i);
+            Series memory s = REGISTRY.seriesOf(sId);
+            if (s.token != address(0)) {
+                uint256 supply = OptionToken(s.token).totalSupply();
+                if (supply > 0) {
+                    Quote memory q = quote(sId, supply, false);
+                    total += q.vMarkWad.wadMul(supply);
+                }
+            }
+        }
+        return total;
     }
 
-    function netGreeks(address stock) external pure override returns (int256 deltaWad, int256 gammaWad, int256 vegaWad) {
-        return (0, 0, 0);
+    function netGreeks(address stock) external view override returns (int256 deltaWad, int256 gammaWad, int256 vegaWad) {
+        uint256 count = REGISTRY.seriesCount();
+        PriceReading memory r = PRICE_GUARD.readLite(stock);
+        int256 netDelta = 0;
+        for (uint256 i = 0; i < count; i++) {
+            bytes32 sId = REGISTRY.seriesIdAt(i);
+            Series memory s = REGISTRY.seriesOf(sId);
+            if (s.stock == stock && s.token != address(0)) {
+                uint256 supply = OptionToken(s.token).totalSupply();
+                if (supply > 0) {
+                    int256 d = EverlastingGreeks.delta(r.s, s.strike, 5000, s.tauSeconds, s.isCall);
+                    netDelta += (d * int256(supply)) / int256(WAD);
+                }
+            }
+        }
+        return (netDelta, 0, 0);
     }
 
     function cancelQueued(uint256 ticket) external override {
