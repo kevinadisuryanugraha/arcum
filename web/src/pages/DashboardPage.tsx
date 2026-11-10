@@ -487,6 +487,39 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
                 />
               </div>
 
+                {/* Quick Scenario Presets */}
+                <div className="pt-1">
+                  <div className="text-[10px] text-arcum-muted font-mono uppercase tracking-wider mb-1.5">
+                    Quick Scenario Presets:
+                  </div>
+                  <div className="grid grid-cols-3 gap-1.5 font-mono text-[11px]">
+                    <button
+                      type="button"
+                      onClick={() => { setTargetMovePct(8); setScenarioDays(1); }}
+                      className="px-2 py-1.5 rounded-lg bg-arcum-card border border-white/5 hover:border-arcum-up/40 hover:bg-arcum-up/10 text-arcum-up text-center transition-all truncate"
+                      title="Earnings Beat: +8% Move in 1 Day"
+                    >
+                      🚀 +8% (1d)
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => { setTargetMovePct(-10); setScenarioDays(2); }}
+                      className="px-2 py-1.5 rounded-lg bg-arcum-card border border-white/5 hover:border-arcum-down/40 hover:bg-arcum-down/10 text-arcum-down text-center transition-all truncate"
+                      title="Selloff: -10% Dip in 2 Days"
+                    >
+                      🩸 -10% (2d)
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => { setTargetMovePct(3); setScenarioDays(7); }}
+                      className="px-2 py-1.5 rounded-lg bg-arcum-card border border-white/5 hover:border-arcum-gold/40 hover:bg-arcum-gold/10 text-arcum-gold text-center transition-all truncate"
+                      title="Steady Drift: +3% Move over 7 Days"
+                    >
+                      📈 +3% (7d)
+                    </button>
+                  </div>
+                </div>
+
               {/* Projected PnL Results Box */}
               <div className={`p-4 rounded-xl border font-mono text-xs space-y-2 ${
                 scenario.netPnlUsdg >= 0

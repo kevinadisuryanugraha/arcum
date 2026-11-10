@@ -17,6 +17,7 @@ import {
   FileText,
   Terminal,
   Activity,
+  Search,
 } from 'lucide-react';
 import { CONTRACT_ADDRESSES, CHAIN_CONFIG } from '../data/protocol';
 
@@ -24,6 +25,7 @@ export const DocsPage: React.FC = () => {
   const [activeSection, setActiveSection] = useState<string>('overview');
   const [selectedNetwork, setSelectedNetwork] = useState<'mainnet' | 'testnet'>('mainnet');
   const [copiedAddress, setCopiedAddress] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState<string>('');
 
   const handleCopy = (key: string, address: string) => {
     navigator.clipboard.writeText(address);
@@ -94,34 +96,56 @@ export const DocsPage: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
         {/* Sticky Left Sidebar Navigation */}
         <aside className="lg:col-span-1">
-          <div className="sticky top-24 space-y-1.5 p-3 rounded-2xl prospectus-card">
-            <div className="px-3 py-2 text-xs font-mono font-semibold uppercase tracking-wider text-arcum-muted">
-              Table of Contents
+          <div className="sticky top-24 space-y-2 p-3 rounded-2xl prospectus-card">
+            {/* Instant Search Bar */}
+            <div className="relative px-1 pt-1">
+              <Search className="w-3.5 h-3.5 text-arcum-muted absolute left-3.5 top-3.5 pointer-events-none" />
+              <input
+                type="text"
+                placeholder="Search docs & topics..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full bg-arcum-card/70 border border-white/10 rounded-xl pl-8 pr-3 py-1.5 text-xs text-white placeholder-arcum-muted focus:outline-none focus:border-arcum-cyan/50 font-mono transition-colors"
+              />
             </div>
-            {sections.map((sec) => {
-              const Icon = sec.icon;
-              const isActive = activeSection === sec.id;
-              return (
-                <button
-                  key={sec.id}
-                  onClick={() => {
-                    setActiveSection(sec.id);
-                    document.getElementById(sec.id)?.scrollIntoView({ behavior: 'smooth' });
-                  }}
-                  className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-medium transition-all ${
-                    isActive
-                      ? 'bg-arcum-cyan/15 text-arcum-cyan border border-arcum-cyan/30'
-                      : 'text-arcum-muted hover:bg-white/5 hover:text-white'
-                  }`}
-                >
-                  <div className="flex items-center gap-2.5 truncate">
-                    <Icon className="w-4 h-4 shrink-0" />
-                    <span className="truncate">{sec.title}</span>
-                  </div>
-                  <ChevronRight className={`w-3.5 h-3.5 opacity-60 transition-transform ${isActive ? 'translate-x-0.5' : ''}`} />
-                </button>
-              );
-            })}
+
+            <div className="px-3 pt-1 text-[10px] font-mono font-semibold uppercase tracking-wider text-arcum-muted flex justify-between items-center">
+              <span>Table of Contents</span>
+              {searchQuery && (
+                <span className="text-arcum-cyan text-[9px] cursor-pointer" onClick={() => setSearchQuery('')}>
+                  Clear
+                </span>
+              )}
+            </div>
+            {sections
+              .filter((sec) =>
+                sec.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                sec.id.toLowerCase().includes(searchQuery.toLowerCase())
+              )
+              .map((sec) => {
+                const Icon = sec.icon;
+                const isActive = activeSection === sec.id;
+                return (
+                  <button
+                    key={sec.id}
+                    onClick={() => {
+                      setActiveSection(sec.id);
+                      document.getElementById(sec.id)?.scrollIntoView({ behavior: 'smooth' });
+                    }}
+                    className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-medium transition-all ${
+                      isActive
+                        ? 'bg-arcum-cyan/15 text-arcum-cyan border border-arcum-cyan/30'
+                        : 'text-arcum-muted hover:bg-white/5 hover:text-white'
+                    }`}
+                  >
+                    <div className="flex items-center gap-2.5 truncate">
+                      <Icon className="w-4 h-4 shrink-0" />
+                      <span className="truncate">{sec.title}</span>
+                    </div>
+                    <ChevronRight className={`w-3.5 h-3.5 opacity-60 transition-transform ${isActive ? 'translate-x-0.5' : ''}`} />
+                  </button>
+                );
+              })}
 
             <div className="pt-4 mt-4 border-t border-white/[0.08] px-3">
               <a
