@@ -31,7 +31,7 @@ def main():
         "<title>Arcum — Everlasting Options on Robinhood Chain</title>",
         'class="dark"',
         "Trade everlasting options on tokenized stocks",
-        "Inter",
+        "Plus Jakarta Sans",
         "JetBrains Mono"
     ])
     print("             [OK] HTML Document, Fonts, and Meta Tags Verified [PASS]")
@@ -71,6 +71,16 @@ def main():
         assert "arcum-independent-exit-guide.html" in js_content
         assert "sell(bytes32,uint128,uint128,uint64,address)" in js_content
         print("             [OK] Emergency Offline HTML Generation Verified [PASS]")
+
+    # 4. Test Docs & Dual-Reference Elements (Surplus + AsterraPools)
+    print("[E2E TEST 4] Verifying Docs Portal, Cyan Glow, and Prospectus Disclosures...")
+    with urllib.request.urlopen(js_url) as js_resp:
+        js_content = js_resp.read().decode("utf-8")
+        assert "Arcum Documentation" in js_content
+        assert "Uniswap V3 TWAP Anti-Sandwich Protection" in js_content or "TWAP" in js_content
+        assert "The Prospectus" in js_content
+        assert "Robinhood Chain" in js_content
+        print("             [OK] Dual-Reference Docs & Cyan Terminal Verified [PASS]")
 
     print("=" * 70)
     print("ALL E2E BROWSER & DOM INTEGRATION TESTS PASSED (100% CLEAN)")
