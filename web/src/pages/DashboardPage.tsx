@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   TrendingUp,
   TrendingDown,
@@ -29,6 +29,9 @@ interface DashboardPageProps {
   onSelectStock: (stock: StockInfo) => void;
   walletConnected: boolean;
   onConnectWallet: () => void;
+  activeTab?: string;
+  onTabChange?: (tab: string) => void;
+  onNavigate?: (route: string, tab?: string) => void;
 }
 
 export const DashboardPage: React.FC<DashboardPageProps> = ({
@@ -37,11 +40,24 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
   onSelectStock,
   walletConnected,
   onConnectWallet,
+  activeTab: externalTab,
+  onTabChange,
+  onNavigate,
 }) => {
-  const [activeTab, setActiveTab] = useState<string>('trade');
+  const [internalTab, setInternalTab] = useState<string>('trade');
+  const activeTab = externalTab !== undefined ? externalTab : internalTab;
+
+  const setActiveTab = (tab: string) => {
+    setInternalTab(tab);
+    if (onTabChange) onTabChange(tab);
+  };
   const [selectedSide, setSelectedSide] = useState<OptionSide>('UP');
   const [selectedSpeed, setSelectedSpeed] = useState<Speed>('DAILY');
   const [selectedStrike, setSelectedStrike] = useState<number>(selectedStock.price);
+
+  useEffect(() => {
+    setSelectedStrike(selectedStock.price);
+  }, [selectedStock.symbol, selectedStock.price]);
   const [tradeUnits, setTradeUnits] = useState<number>(10);
   const [showBuyModal, setShowBuyModal] = useState<boolean>(false);
   const [buyStep, setBuyStep] = useState<'idle' | 'approving' | 'approved' | 'buying' | 'success'>('idle');
@@ -316,6 +332,11 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
                           <div className="text-amber-400 font-tabular">-${q.dailyDecayUsdg.toFixed(3)}</div>
                         </div>
                         <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setSelectedStrike(strikeVal);
+                          }}
                           className={`px-3 py-1 rounded text-xs font-medium transition-colors ${
                             isSelected
                               ? 'bg-gradient-to-r from-arcum-cyan to-arcum-cobalt text-black font-bold'

@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { Shield, Wallet, ExternalLink, ChevronDown } from 'lucide-react';
+import { Shield, Wallet, ExternalLink, Menu, X } from 'lucide-react';
 import { SessionKind } from '../types';
 
 interface NavbarProps {
   currentRoute: string;
-  onNavigate: (route: string) => void;
+  activeTab?: string;
+  onNavigate: (route: string, tab?: string) => void;
   walletConnected: boolean;
   onConnectWallet: () => void;
   session: SessionKind;
@@ -12,31 +13,45 @@ interface NavbarProps {
 
 export const Navbar: React.FC<NavbarProps> = ({
   currentRoute,
+  activeTab = 'trade',
   onNavigate,
   walletConnected,
   onConnectWallet,
   session,
 }) => {
   const [networkMode, setNetworkMode] = useState<'mainnet' | 'testnet'>('mainnet');
+  const [mobileMenuOpen, setMobileMenuOpen] = useState<boolean>(false);
 
   const navLinks = [
-    { id: 'dashboard', label: 'Swap' },
-    { id: 'markets', label: 'Pools' },
-    { id: 'positions', label: 'Positions' },
-    { id: 'products', label: 'Shield' },
-    { id: 'writers', label: 'Writer Pool' },
-    { id: 'protocol', label: 'Analytics' },
-    { id: 'docs', label: 'Docs' },
-    { id: 'contracts', label: 'Contracts' },
+    { id: 'swap', label: 'Swap', route: 'dashboard', tab: 'trade' },
+    { id: 'pools', label: 'Pools', route: 'dashboard', tab: 'trade' },
+    { id: 'positions', label: 'Positions', route: 'dashboard', tab: 'positions' },
+    { id: 'shield', label: 'Shield', route: 'dashboard', tab: 'shield' },
+    { id: 'writers', label: 'Writer Pool', route: 'dashboard', tab: 'pool' },
+    { id: 'analytics', label: 'Analytics', route: 'dashboard', tab: 'activity' },
+    { id: 'docs', label: 'Docs', route: 'docs' },
+    { id: 'contracts', label: 'Contracts', route: 'contracts' },
   ];
 
+  const handleLinkClick = (route: string, tab?: string) => {
+    setMobileMenuOpen(false);
+    onNavigate(route, tab);
+  };
+
+  const isLinkActive = (link: typeof navLinks[0]) => {
+    if (link.route === 'dashboard') {
+      return currentRoute === 'dashboard' && activeTab === link.tab;
+    }
+    return currentRoute === link.route;
+  };
+
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-white/[0.08] bg-arcum-bg/90 backdrop-blur-md">
+    <header className="sticky top-0 z-40 w-full border-b border-white/[0.08] bg-arcum-bg/95 backdrop-blur-md">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between gap-4">
         {/* Brand Group */}
         <div className="flex items-center gap-7">
           <button
-            onClick={() => onNavigate('home')}
+            onClick={() => handleLinkClick('home')}
             className="group flex items-center gap-2.5 text-left transition-opacity hover:opacity-90"
             aria-label="Arcum home"
           >
@@ -56,20 +71,17 @@ export const Navbar: React.FC<NavbarProps> = ({
             </div>
           </button>
 
-          {/* Desktop Navigation Links (exact AsterraPools styling) */}
+          {/* Desktop Navigation Links */}
           <nav className="hidden lg:flex items-center gap-1">
             {navLinks.map((link) => {
-              const isActive =
-                currentRoute === link.id ||
-                (link.id === 'dashboard' && currentRoute === 'dashboard') ||
-                (link.id === 'positions' && currentRoute === 'dashboard');
+              const active = isLinkActive(link);
               return (
                 <button
                   key={link.id}
-                  onClick={() => onNavigate(link.id === 'positions' ? 'dashboard' : link.id)}
+                  onClick={() => handleLinkClick(link.route, link.tab)}
                   className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
-                    isActive
-                      ? 'text-white bg-white/[0.08] shadow-sm'
+                    active
+                      ? 'text-white bg-white/[0.08] shadow-sm font-semibold'
                       : 'text-arcum-muted hover:text-white hover:bg-white/[0.04]'
                   }`}
                 >
@@ -120,8 +132,40 @@ export const Navbar: React.FC<NavbarProps> = ({
             <Wallet className="w-3.5 h-3.5" />
             <span>{walletConnected ? '0x71C8...a49B' : 'Connect'}</span>
           </button>
+
+          {/* Mobile Menu Hamburger */}
+          <button
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="lg:hidden p-2 rounded-lg text-arcum-muted hover:text-white hover:bg-white/5 transition-colors"
+            aria-label="Toggle navigation menu"
+          >
+            {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+          </button>
         </div>
       </div>
+
+      {/* Mobile Navigation Dropdown */}
+      {mobileMenuOpen && (
+        <div className="lg:hidden border-t border-white/[0.08] bg-arcum-bgElevated px-4 py-4 space-y-2 font-mono text-xs shadow-2xl animate-in slide-in-from-top-2">
+          {navLinks.map((link) => {
+            const active = isLinkActive(link);
+            return (
+              <button
+                key={link.id}
+                onClick={() => handleLinkClick(link.route, link.tab)}
+                className={`w-full text-left px-3 py-2.5 rounded-lg transition-colors flex items-center justify-between ${
+                  active
+                    ? 'bg-arcum-cyan/15 text-arcum-cyan font-bold border border-arcum-cyan/30'
+                    : 'text-arcum-muted hover:text-white hover:bg-white/5'
+                }`}
+              >
+                <span>{link.label}</span>
+                <span className="text-[10px] text-arcum-muted">{link.route}</span>
+              </button>
+            );
+          })}
+        </div>
+      )}
     </header>
   );
 };

@@ -14,21 +14,40 @@ import { StockInfo, SessionKind } from './types';
 
 export function App() {
   const [currentRoute, setCurrentRoute] = useState<string>('home');
+  const [activeTab, setActiveTab] = useState<string>('trade');
   const [stocks, setStocks] = useState<StockInfo[]>(INITIAL_STOCKS);
   const [selectedStock, setSelectedStock] = useState<StockInfo>(INITIAL_STOCKS[0]);
   const [walletConnected, setWalletConnected] = useState<boolean>(true);
   const [session, setSession] = useState<SessionKind>('REGULAR');
+
+  const handleNavigate = (route: string, tab?: string) => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (tab) {
+      setActiveTab(tab);
+      setCurrentRoute('dashboard');
+    } else if (route === 'dashboard') {
+      if (!tab) setActiveTab('trade');
+      setCurrentRoute('dashboard');
+    } else {
+      setCurrentRoute(route);
+    }
+  };
+
+  const handleSelectStock = (stock: StockInfo) => {
+    setSelectedStock(stock);
+  };
 
   const handleConnectWallet = () => {
     setWalletConnected(!walletConnected);
   };
 
   return (
-    <div className="min-h-screen bg-arcum-bg text-arcum-text flex flex-col font-sans selection:bg-arcum-gold/20 selection:text-arcum-gold">
+    <div className="min-h-screen bg-arcum-bg text-arcum-text flex flex-col font-sans selection:bg-arcum-cyan/20 selection:text-arcum-cyan">
       {/* Top Navbar */}
       <Navbar
         currentRoute={currentRoute}
-        onNavigate={setCurrentRoute}
+        activeTab={activeTab}
+        onNavigate={handleNavigate}
         walletConnected={walletConnected}
         onConnectWallet={handleConnectWallet}
         session={session}
@@ -38,16 +57,17 @@ export function App() {
       <StockTickerBar
         stocks={stocks}
         selectedStock={selectedStock}
-        onSelectStock={setSelectedStock}
+        onSelectStock={handleSelectStock}
+        onNavigate={handleNavigate}
       />
 
       {/* Main Page Router */}
       <main className="flex-1">
         {currentRoute === 'home' && (
           <LandingPage
-            onNavigate={setCurrentRoute}
+            onNavigate={handleNavigate}
             stocks={stocks}
-            onSelectStock={setSelectedStock}
+            onSelectStock={handleSelectStock}
           />
         )}
 
@@ -55,14 +75,17 @@ export function App() {
           <DashboardPage
             stocks={stocks}
             selectedStock={selectedStock}
-            onSelectStock={setSelectedStock}
+            onSelectStock={handleSelectStock}
             walletConnected={walletConnected}
             onConnectWallet={handleConnectWallet}
+            activeTab={activeTab}
+            onTabChange={setActiveTab}
+            onNavigate={handleNavigate}
           />
         )}
 
-        {(currentRoute === 'products' || currentRoute === 'markets' || currentRoute === 'protocol' || currentRoute === 'costs' || currentRoute === 'writers') && (
-          <ProductsPage onNavigate={setCurrentRoute} />
+        {currentRoute === 'products' && (
+          <ProductsPage onNavigate={handleNavigate} />
         )}
 
         {currentRoute === 'learn' && <LearnPage />}
@@ -75,7 +98,7 @@ export function App() {
       </main>
 
       {/* Global Footer */}
-      <Footer onNavigate={setCurrentRoute} />
+      <Footer onNavigate={handleNavigate} />
     </div>
   );
 }
